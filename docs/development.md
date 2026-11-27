@@ -23,6 +23,8 @@ The FC001 candidate validates one bare ASCII node on a line after a `flowchart` 
 
 The FC003 candidate adds `parse` for that same input. The model has one rectangular node whose label is its identifier, an empty edge array, and a canonical direction (`TD` becomes `TB`). Both operations use the same parser and return the same diagnostics for rejected source.
 
+The FC004 candidate accepts newline-separated standalone nodes with distinct identifiers. Attach `[label]`, `(label)`, or `{label}` directly to the identifier to select a rectangle, rounded node, or diamond. Plain and double-quoted labels support Unicode. The parser trims surrounding whitespace, preserves interior text, and returns nodes in source order. Double quotes allow shape delimiters within the label text. The adapter decodes standard input as a UTF-8 stream so a character split across input chunks survives intact. Edges, redeclarations, expanded shapes, and compound labels are outside this increment.
+
 For live differential evaluation and SVG inspection, install the separate oracle:
 
 ```sh
@@ -38,7 +40,7 @@ On Linux, Chromium system libraries may be needed: `npm exec --prefix reference 
 
 | Path | Responsibility |
 | --- | --- |
-| `src/` | Independent product boundary and FC001 flowchart validation |
+| `src/` | Independent product boundary, flowchart validation and canonical parsing |
 | `reference/` | Isolated pinned Mermaid/Chromium environment and observed reference results |
 | `specs/` | Scope, protocol, policy, capability DAG, schema and acceptance seal |
 | `fixtures/flowchart/` | Authored, independently oracle-verified examples and expectations |
