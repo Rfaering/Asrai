@@ -22,14 +22,19 @@ test('backlog validates; cycles, unknown fixtures, empty criteria and unearned a
     assert.ok(validateBacklog(backlog, fixtures).length);
   }
 });
-test('capability selection includes dependencies and all accepted regressions',async()=>{
-  const caps=(await json('specs/capabilities.json')).capabilities;
-  assert.deepEqual([...selectedIds(caps,'FC001')],['FC001']);
-  assert.ok(selectedIds(caps,'FC005').has('FC002'));
+test('capability selection includes dependencies and all accepted regressions',()=>{
+  const caps=[
+    {id:'FC001',status:'accepted',dependencies:[]},
+    {id:'FC002',status:'pending',dependencies:['FC001']},
+    {id:'FC003',status:'accepted',dependencies:['FC001']},
+    {id:'FC004',status:'pending',dependencies:['FC002']},
+    {id:'FC005',status:'pending',dependencies:['FC004']},
+    {id:'FC014',status:'deferred',dependencies:['FC005']},
+  ];
+  assert.deepEqual(selectedIds(caps,'FC001'),new Set(['FC001','FC003']));
+  assert.deepEqual(selectedIds(caps,'FC005'),new Set(['FC001','FC002','FC003','FC004','FC005']));
   assert.throws(()=>selectedIds(caps,'missing'));
   assert.throws(()=>selectedIds(caps,'FC014'));
-  const cloned=structuredClone(caps);cloned.find(c=>c.id==='FC006').status='accepted';
-  assert.ok(selectedIds(cloned,'FC001').has('FC006'));
 });
 test('generated properties are deterministic, seed-sensitive and have independent expected models',()=>{
   const ids=new Set(['FC007','FC012']);
