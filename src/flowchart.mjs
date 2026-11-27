@@ -1,4 +1,4 @@
-const header = /^(?:flowchart|graph)[ \t]+(?:TB|TD|BT|LR|RL)$/;
+const header = /^(?:flowchart|graph)[ \t]+(TB|TD|BT|LR|RL)$/;
 const nodeIdentifier = /^[A-Za-z_][A-Za-z0-9_]*/;
 const shapeClosers = { '[': ']', '(': ')', '{': '}' };
 const edgeOperator = /^(?:-->|---)(?![-<>])/;
@@ -56,10 +56,10 @@ function diagnoseNodeSuffix(suffix, line, column) {
   }
 }
 
-export function validateFlowchart(source) {
+export function parseFlowchart(source) {
   const lines = source.split(/\r?\n/);
-  let hasHeader = false;
-  let hasNode = false;
+  let direction;
+  let nodeId;
 
   for (const [index, line] of lines.entries()) {
     const trimmedStart = line.trimStart();
@@ -68,11 +68,12 @@ export function validateFlowchart(source) {
 
     const lineNumber = index + 1;
     const column = line.length - trimmedStart.length + 1;
-    if (!hasHeader) {
-      if (!header.test(statement)) {
+    if (!direction) {
+      const match = header.exec(statement);
+      if (!match) {
         return reject(lineNumber, column, 'Expected flowchart or graph followed by TB, TD, BT, LR, or RL.');
       }
-      hasHeader = true;
+      direction = match[1] === 'TD' ? 'TB' : match[1];
       continue;
     }
 
@@ -86,18 +87,33 @@ export function validateFlowchart(source) {
       const malformed = diagnoseNodeSuffix(suffix, lineNumber, suffixColumn);
       if (malformed) return malformed;
     }
-    if (hasNode) {
+    if (nodeId) {
       return reject(lineNumber, column, 'Only one bare node is supported.', 'ASRAI_UNSUPPORTED');
     }
     if (suffix) {
       return reject(lineNumber, suffixColumn, 'Only bare nodes are supported.', 'ASRAI_UNSUPPORTED');
     }
-    hasNode = true;
+    nodeId = identifier;
   }
 
-  if (!hasNode) {
-    const message = hasHeader ? 'Expected a bare node.' : 'Expected a flowchart or graph header.';
+  if (!nodeId) {
+    const message = direction ? 'Expected a bare node.' : 'Expected a flowchart or graph header.';
     return reject(lines.length, lines.at(-1).length + 1, message);
   }
+  return {
+    status: 'ok',
+    model: {
+      type: 'flowchart',
+      direction,
+      nodes: [{ id: nodeId, label: nodeId, shape: 'rect' }],
+      edges: [],
+    },
+  };
+}
+
+export function validateFlowchart(source) {
+  const result = parseFlowchart(source);
+  if (!result.model) return result;
+
   return { status: 'ok', accepted: true, diagramType: 'flowchart', diagnostics: [] };
 }

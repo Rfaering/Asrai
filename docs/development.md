@@ -21,6 +21,8 @@ FC001 passed all six validation checks at acceptance. A full `npm run evaluate` 
 
 The FC001 candidate validates one bare ASCII node on a line after a `flowchart` or `graph` header with direction `TB`, `TD`, `BT`, `LR`, or `RL`. It accepts LF and CRLF line endings, surrounding whitespace, and blank lines. Validation rejections carry a one-based diagnostic. Shapes, edges, additional statements, comments, and semicolon separators are outside this increment. Parse, layout, and render are separate capabilities.
 
+The FC003 candidate adds `parse` for that same input. The model has one rectangular node whose label is its identifier, an empty edge array, and a canonical direction (`TD` becomes `TB`). Both operations use the same parser and return the same diagnostics for rejected source.
+
 For live differential evaluation and SVG inspection, install the separate oracle:
 
 ```sh

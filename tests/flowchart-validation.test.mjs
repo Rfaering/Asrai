@@ -87,15 +87,18 @@ test('reports malformed shapes and incomplete edges as syntax errors', async () 
   }
 });
 
-test('dispatches only validation requests for protocol version 1', async () => {
+test('dispatches validation and parsing only for protocol version 1', async () => {
   const source = 'flowchart TB\nA';
-  for (const operation of ['parse', 'layout', 'render']) {
+  for (const operation of ['layout', 'render']) {
     assert.deepEqual(await execute({ protocolVersion: 1, operation, source }), {
       status: 'unimplemented', code: 'ASRAI_NOT_IMPLEMENTED',
     });
   }
-  assert.deepEqual(await execute({ protocolVersion: 2, operation: 'validate', source }), {
-    status: 'unimplemented', code: 'ASRAI_NOT_IMPLEMENTED',
-  });
+  for (const operation of ['validate', 'parse']) {
+    assert.deepEqual(await execute({ protocolVersion: 2, operation, source }), {
+      status: 'unimplemented', code: 'ASRAI_NOT_IMPLEMENTED',
+    });
+  }
   await assert.rejects(validate(null), TypeError);
+  await assert.rejects(execute({ protocolVersion: 1, operation: 'parse', source: null }), TypeError);
 });
