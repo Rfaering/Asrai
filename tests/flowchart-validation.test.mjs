@@ -40,16 +40,17 @@ test('rejects missing or invalid headers and bare node identifiers', async () =>
   }
 });
 
-test('rejects additional node syntax instead of accepting a valid prefix', async () => {
+test('rejects unsupported shapes, edges and redeclarations', async () => {
   const cases = [
-    ['graph TD\n  A[Label]', 2, 4],
-    ['graph TD\nA["A ] in a label"]', 2, 2],
+    ['graph TD\nA[(Archive)]', 2, 2],
+    ['graph TD\nA[/Slant/]', 2, 2],
     ['graph TD\nA((Circle))', 2, 2],
+    ['graph TD\nA@{ shape: circle }', 2, 2],
     ['graph LR\nA --> B', 2, 3],
     ['graph LR\nA -->|yes| B', 2, 3],
     ['graph LR\nA --- B', 2, 3],
     ['graph LR\nA ----> B', 2, 3],
-    ['graph TB\nA\n  B', 3, 3],
+    ['graph TB\nA\n  A', 3, 3],
   ];
   for (const [source, line, column] of cases) {
     const response = await validate(source);
@@ -68,6 +69,9 @@ test('reports malformed shapes and incomplete edges as syntax errors', async () 
     ['graph LR\r\n\r\n  A (broken]', 3, 5, 'close the node label'],
     ['graph TB\nA{"A } in a label"', 2, 2, 'close the node label'],
     ['graph TB\nA["missing end quote]', 2, 2, 'close the node label'],
+    ['graph TB\nA[]', 2, 2, 'Expected text'],
+    ['graph TB\nA[""]', 2, 2, 'Expected text'],
+    ['graph TB\nA [Label]', 2, 3, 'immediately follow'],
     ['flowchart TB\nA -->', 2, 3, 'edge target'],
     ['graph LR\n  A[Start] ---  ', 2, 12, 'edge target'],
     ['graph LR\nA -->|yes|', 2, 3, 'edge target'],

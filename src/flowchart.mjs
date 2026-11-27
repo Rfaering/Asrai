@@ -1,6 +1,10 @@
 const header = /^(?:flowchart|graph)[ \t]+(TB|TD|BT|LR|RL)$/;
 const nodeIdentifier = /^[A-Za-z_][A-Za-z0-9_]*/;
-const shapeClosers = { '[': ']', '(': ')', '{': '}' };
+const nodeShapes = {
+  '[': { closing: ']', shape: 'rect' },
+  '(': { closing: ')', shape: 'rounded' },
+  '{': { closing: '}', shape: 'diamond' },
+};
 const edgeOperator = /^(?:-->|---)(?![-<>])/;
 
 function reject(line, column, message, code = 'ASRAI_SYNTAX') {
@@ -20,11 +24,11 @@ function findLabelEnd(text, closing) {
   return text.indexOf(closing, 1);
 }
 
-// Classify malformed shape and edge suffixes during bare-node validation.
+// Diagnose malformed edges even while complete edge statements are unsupported.
 function diagnoseNodeSuffix(suffix, line, column) {
   let rest = suffix;
   while (rest) {
-    const closing = shapeClosers[rest[0]];
+    const closing = nodeShapes[rest[0]]?.closing;
     if (closing) {
       const labelEnd = findLabelEnd(rest, closing);
       if (labelEnd === -1) {
@@ -56,10 +60,54 @@ function diagnoseNodeSuffix(suffix, line, column) {
   }
 }
 
+function parseNodeStatement(statement, line, column) {
+  const id = nodeIdentifier.exec(statement)?.[0];
+  if (!id || id === 'end') {
+    return reject(line, column, 'Expected an ASCII node identifier other than end.');
+  }
+
+  const suffix = statement.slice(id.length).trimStart();
+  if (!suffix) return { node: { id, label: id, shape: 'rect' } };
+
+  const suffixColumn = column + statement.length - suffix.length;
+  const nodeShape = nodeShapes[suffix[0]];
+  const labelEnd = nodeShape ? findLabelEnd(suffix, nodeShape.closing) : -1;
+  if (nodeShape && labelEnd === -1) {
+    return reject(line, suffixColumn, `Expected ${nodeShape.closing} to close the node label.`);
+  }
+
+  const rest = suffix.slice(labelEnd + 1).trimStart();
+  if (rest) {
+    const restColumn = suffixColumn + suffix.length - rest.length;
+    return diagnoseNodeSuffix(rest, line, restColumn)
+      ?? reject(line, suffixColumn, 'Only standalone bare or labeled nodes are supported.', 'ASRAI_UNSUPPORTED');
+  }
+  if (suffixColumn !== column + id.length) {
+    return reject(line, suffixColumn, 'The label opener must immediately follow the node identifier.');
+  }
+
+  let label = suffix.slice(1, labelEnd);
+  if (nodeShape.shape === 'rect' && /^[(/\\]/.test(label)) {
+    return reject(line, suffixColumn, 'Only rectangle, rounded and diamond shapes are supported.', 'ASRAI_UNSUPPORTED');
+  }
+  if (label.startsWith('"')) {
+    const quoted = /^"([^"]*)"\s*$/.exec(label);
+    if (!quoted) {
+      return reject(line, suffixColumn, 'Only one quoted label is supported per node.', 'ASRAI_UNSUPPORTED');
+    }
+    label = quoted[1];
+  } else if (/[\[\](){}"]/.test(label)) {
+    return reject(line, suffixColumn, 'Expected a plain or double-quoted node label.');
+  }
+  if (!label) return reject(line, suffixColumn, 'Expected text inside the node label.');
+
+  return { node: { id, label: label.trim(), shape: nodeShape.shape } };
+}
+
 export function parseFlowchart(source) {
   const lines = source.split(/\r?\n/);
   let direction;
-  let nodeId;
+  const nodes = new Map();
 
   for (const [index, line] of lines.entries()) {
     const trimmedStart = line.trimStart();
@@ -77,27 +125,18 @@ export function parseFlowchart(source) {
       continue;
     }
 
-    const identifier = nodeIdentifier.exec(statement)?.[0];
-    if (!identifier || identifier === 'end') {
-      return reject(lineNumber, column, 'Expected a bare ASCII node identifier other than end.');
+    const result = parseNodeStatement(statement, lineNumber, column);
+    if (!result.node) return result;
+
+    const { node } = result;
+    if (nodes.has(node.id)) {
+      return reject(lineNumber, column, 'Node redeclarations are unsupported.', 'ASRAI_UNSUPPORTED');
     }
-    const suffix = statement.slice(identifier.length).trimStart();
-    const suffixColumn = column + statement.length - suffix.length;
-    if (suffix) {
-      const malformed = diagnoseNodeSuffix(suffix, lineNumber, suffixColumn);
-      if (malformed) return malformed;
-    }
-    if (nodeId) {
-      return reject(lineNumber, column, 'Only one bare node is supported.', 'ASRAI_UNSUPPORTED');
-    }
-    if (suffix) {
-      return reject(lineNumber, suffixColumn, 'Only bare nodes are supported.', 'ASRAI_UNSUPPORTED');
-    }
-    nodeId = identifier;
+    nodes.set(node.id, node);
   }
 
-  if (!nodeId) {
-    const message = direction ? 'Expected a bare node.' : 'Expected a flowchart or graph header.';
+  if (!nodes.size) {
+    const message = direction ? 'Expected a node.' : 'Expected a flowchart or graph header.';
     return reject(lines.length, lines.at(-1).length + 1, message);
   }
   return {
@@ -105,7 +144,7 @@ export function parseFlowchart(source) {
     model: {
       type: 'flowchart',
       direction,
-      nodes: [{ id: nodeId, label: nodeId, shape: 'rect' }],
+      nodes: [...nodes.values()],
       edges: [],
     },
   };
