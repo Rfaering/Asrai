@@ -43,7 +43,12 @@ test('rejects missing or invalid headers and bare node identifiers', async () =>
 test('rejects additional node syntax instead of accepting a valid prefix', async () => {
   const cases = [
     ['graph TD\n  A[Label]', 2, 4],
+    ['graph TD\nA["A ] in a label"]', 2, 2],
+    ['graph TD\nA((Circle))', 2, 2],
     ['graph LR\nA --> B', 2, 3],
+    ['graph LR\nA -->|yes| B', 2, 3],
+    ['graph LR\nA --- B', 2, 3],
+    ['graph LR\nA ----> B', 2, 3],
     ['graph TB\nA\n  B', 3, 3],
   ];
   for (const [source, line, column] of cases) {
@@ -54,6 +59,31 @@ test('rejects additional node syntax instead of accepting a valid prefix', async
     assert.equal(diagnostic.code, 'ASRAI_UNSUPPORTED', source);
     assert.equal(diagnostic.line, line, source);
     assert.equal(diagnostic.column, column, source);
+  }
+});
+
+test('reports malformed shapes and incomplete edges as syntax errors', async () => {
+  const cases = [
+    ['flowchart TB\nA[broken', 2, 2, 'close the node label'],
+    ['graph LR\r\n\r\n  A (broken]', 3, 5, 'close the node label'],
+    ['graph TB\nA{"A } in a label"', 2, 2, 'close the node label'],
+    ['graph TB\nA["missing end quote]', 2, 2, 'close the node label'],
+    ['flowchart TB\nA -->', 2, 3, 'edge target'],
+    ['graph LR\n  A[Start] ---  ', 2, 12, 'edge target'],
+    ['graph LR\nA -->|yes|', 2, 3, 'edge target'],
+    ['graph LR\nA -->|yes', 2, 6, 'close the edge label'],
+    ['graph LR\nA --> B -->', 2, 9, 'edge target'],
+    ['graph LR\nA --> end', 2, 7, 'reserved'],
+    ['graph TB\nA\n  B{broken', 3, 4, 'close the node label'],
+  ];
+  for (const [source, line, column, expectedMessage] of cases) {
+    const response = await validate(source);
+    assert.equal(response.status, 'ok', source);
+    assert.equal(response.accepted, false, source);
+    assert.equal(response.diagnostics.length, 1, source);
+    const { message, ...diagnostic } = response.diagnostics[0];
+    assert.deepEqual(diagnostic, { code: 'ASRAI_SYNTAX', severity: 'error', line, column }, source);
+    assert.ok(message.includes(expectedMessage), source);
   }
 });
 
