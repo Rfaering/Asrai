@@ -70,8 +70,14 @@
         "syntax",
         "diagnostics"
       ],
-      "status": "pending",
-      "evidence": [],
+      "status": "accepted",
+      "evidence": [
+        {
+          "report": "evidence/FC002.json",
+          "candidateSha256": "5cba6fd819a528a9f62497e4ddaf6bd60aac7cc6d02717f396d409a907b746c4",
+          "acceptanceSha256": "51b7d0a61822b85906495ed903d735617ecbb2f3fdef0c6be28b217a3e93086d"
+        }
+      ],
       "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
     },
     {
@@ -105,8 +111,14 @@
       "evaluationStrategy": [
         "semantics"
       ],
-      "status": "pending",
-      "evidence": [],
+      "status": "accepted",
+      "evidence": [
+        {
+          "report": "evidence/FC003.json",
+          "candidateSha256": "5cba6fd819a528a9f62497e4ddaf6bd60aac7cc6d02717f396d409a907b746c4",
+          "acceptanceSha256": "51b7d0a61822b85906495ed903d735617ecbb2f3fdef0c6be28b217a3e93086d"
+        }
+      ],
       "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
     },
     {

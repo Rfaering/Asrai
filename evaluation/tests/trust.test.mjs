@@ -15,7 +15,8 @@ test('trusted-base acceptance accepts source-only candidate and rejects resealed
   git('init','--quiet');git('config','core.autocrlf','false');git('add','--all');
   const commit=()=>git('-c','user.name=Asrai Harness Test','-c','user.email=asrai-test@example.invalid','commit','--quiet','-m','Test-only fixture');
   commit();const base=git('rev-parse','HEAD');
-  await writeFile(resolve(candidate,'src/index.mjs'),"export async function execute(){return {status:'ok',accepted:true,diagramType:'flowchart',diagnostics:[]}}\n");
+  const productEntry = resolve(candidate, 'src/index.mjs');
+  await writeFile(productEntry, `${await readFile(productEntry, 'utf8')}\n// Test-only source change for the trusted-base gate.\n`);
   git('add','src/index.mjs');commit();
   const acceptance=()=>spawnSync(process.execPath,[resolve(trusted,'factory/ci-accept.mjs'),'--candidate',candidate,'--base',base,'--capability','FC001'],{cwd:trusted,encoding:'utf8',windowsHide:true});
   const good=acceptance();assert.equal(good.status,0,good.stderr);assert.match(good.stdout,/"failed":0/);

@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "requestedCapability": "FC003",
+  "capabilities": [
+    "FC001",
+    "FC003"
+  ],
+  "candidateTreeSha256": "5cba6fd819a528a9f62497e4ddaf6bd60aac7cc6d02717f396d409a907b746c4",
+  "acceptanceSha256": "51b7d0a61822b85906495ed903d735617ecbb2f3fdef0c6be28b217a3e93086d",
+  "reference": {
+    "mermaid": "11.17.2",
+    "lockSha256": "163ddd3f90570798a9ba69a3b56e3fcf36bd3f47365990a02b42d183d65f966a",
+    "fixturesSha256": "ee24004f3930a43af26270976dabde78da15af005fab56bb9ba6c0d1873d6e8f",
+    "configSha256": "eb999ef841dcfb36afff5096325e2295426a3c474ed41849e93ae744411e10d0"
+  },
+  "environment": {
+    "node": "v24.13.1",
+    "platform": "win32",
+    "seed": 1729
+  },
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "results": [
+    {
+      "caseId": "header-tb",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 83.15499999999999
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-tb",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 65.0188
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-td",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.02939999999998
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-td",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 64.00190000000003
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-bt",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 64.06350000000003
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-bt",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.24969999999996
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-lr",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 65.50479999999999
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-lr",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 63.36360000000002
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-rl",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 68.80320000000006
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-rl",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.58569999999997
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "graph-alias",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 68.18100000000004
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "graph-alias",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 65.57950000000005
+      },
+      "outcome": "pass"
+    }
+  ]
+}
