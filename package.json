@@ -9,6 +9,7 @@
     "test": "node factory/test.mjs",
     "factory:next": "node factory/cli.mjs next",
     "factory:status": "node factory/cli.mjs status",
+    "factory:issues": "node factory/github.mjs export",
     "evaluate": "node evaluation/run.mjs",
     "reference:install": "npm ci --prefix reference --ignore-scripts",
     "reference:browser": "npm exec --prefix reference -- playwright install chromium",

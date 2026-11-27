@@ -1,5 +1,7 @@
 # Working on Asrai
 
+For the normal issue → agent → readable PR → owner review flow, start with `docs/github-workflow.md`. Commands below are the agent's underlying tools; routine work does not require the owner to operate the terminal.
+
 Use Node 24.13.1 (`.node-version`) and npm 11.10.0 (the validated lockfile generator). Commands below work from the repository root in PowerShell or a POSIX shell.
 
 ```sh
@@ -57,7 +59,7 @@ Keep reports outside candidate source. Source digests cover every file in the ad
 node factory/ci-accept.mjs --candidate C:/path/to/candidate --base <full-trusted-base-sha>
 ```
 
-Run that command from the trusted checkout after the baseline is committed. It rejects protected-path changes in the candidate and defaults to the first ready task. The local repository initially has no commits/remote, so the checked-in CI is prepared but has not run on GitHub. No remote settings have been changed.
+Run that command from the trusted checkout. It rejects protected-path changes in the candidate and defaults to the first ready task. The baseline is now committed and published at `Rfaering/Asrai`; its initial Windows/Linux/oracle CI run passed. PRs supply the named capability through the review contract and use the base checkout for product evaluation. See the GitHub workflow guide for the separately reviewed factory/contract path.
 
 ## Common failure actions
 
@@ -67,4 +69,4 @@ Run that command from the trusted checkout after the baseline is committed. It r
 - **Candidate timeout/invalid response/permission denial:** inspect the product protocol and source boundary. Debug logs belong on stderr; reference/evaluator access is forbidden.
 - **Product failure:** minimize the counterexample, add a developer regression, correct the implementation and rerun the selected capability plus accepted regressions.
 
-Significant choices go in ADRs; failures/discoveries use the small templates in their directories. License selection and remote repository governance remain owner decisions; this assignment does not publish or assign a project license.
+Significant choices go in ADRs; failures/discoveries use the small templates in their directories. License selection remains an owner decision; publishing the repository does not assign a project license. Remote protections and the single-owner review limits are documented in `docs/github-workflow.md`.

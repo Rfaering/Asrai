@@ -1,0 +1,55 @@
+name: Feature or diagram capability
+description: Describe an outcome you want Asrai to support. The factory fills in the engineering details.
+title: "Feature: "
+labels: ["kind:capability", "stage:discovery"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start with the behavior you want and an example. You do not need to design the implementation.
+        An agent will identify the interfaces, dependencies, acceptance cases and evidence needed for review.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What should you be able to describe, see or do? Why does it matter?
+      placeholder: I want a decision node with two labeled outgoing arrows so that I can describe a branching workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example input and expected result
+      description: Include diagram source, a sketch, an image or SVG, or a plain-language example. Label reference output as reference output.
+      placeholder: |
+        flowchart LR
+          A{Ready?} -->|yes| B[Continue]
+          A -->|no| C[Wait]
+
+        Expected: one decision node, two labeled arrows, and two destination nodes.
+    validations:
+      required: true
+  - type: textarea
+    id: review
+    attributes:
+      label: How I will verify it
+      description: Describe observable results that would convince you this works.
+      placeholder: The labels are readable, yes/no point to the right nodes, and the output SVG opens without external resources.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and boundaries
+      description: Optional. What is essential now, and what can wait?
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Requested priority
+      options: [Normal, High, Later]
+      default: 0
+  - type: textarea
+    id: engineering
+    attributes:
+      label: Factory analysis
+      description: Optional for you. The agent records capability ID, affected interfaces, reference behavior, dependencies and executable acceptance here before implementation.

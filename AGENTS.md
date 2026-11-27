@@ -17,6 +17,10 @@ Asrai is an experiment in autonomous software production and an independent diag
 
 ## Workflow and roles
 
+Use GitHub issues for requested outcomes, priorities and work discussion; use PRs as the owner's verification surface. Read `docs/github-workflow.md`. Every work PR links its managing issue and follows `.github/pull_request_template.md`: explain behavior, meaningful public/internal interfaces and input/output/error contracts, a complete worked example, actual evidence, verification steps and limitations. Visual changes include inline actual Asrai PNG output plus its SVG and source; label Mermaid references/illustrations separately. Parser/factory changes show actual JSON, diagnostics or workflow output. Use immutable commit URLs for previews and do not bury the only useful evidence in artifact archives.
+
+Keep implementation PRs separate from protected factory/specification changes. CI classifies paths using the base policy; successful factory/documentation checks do not accept product capabilities. Use `Refs #N` for a candidate pending independent acceptance, and `Closes #N` in the independently reviewed completing acceptance PR. Maintain the linked issue's stage honestly; issue closure/labels do not redefine the registry. The owner is the final reader/merger. Do not merge or enable auto-merge without explicit user instruction. No background issue executor is installed.
+
 Follow `factory/workflow.json`: discover → specify → decompose → implement → independently evaluate → correct → accept. These are separate responsibilities, not permission to pretend an implementation agent is an independent reviewer.
 
 Implementation changes normally touch `src/`, `tests/` and focused development/failure notes. Run `npm run evaluate -- --capability FCxxx`; this evaluates the capability, its dependencies and all accepted regressions. Reports, screenshots and benchmarks go under ignored `artifacts/`. Preserve meaningful evidence in `evidence/` only when independently accepted; reference the report path and both source/acceptance digests in the backlog. Do not check in misleading pass reports from test mocks.

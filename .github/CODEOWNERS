@@ -1,0 +1,14 @@
+# Ownership identifies the human responsible for contract changes.
+# With a sole owner who also authors agent PRs, review is the owner's deliberate merge decision;
+# GitHub cannot count an author's review as an independent approval.
+/.github/ @Rfaering
+/AGENTS.md @Rfaering
+/specs/ @Rfaering
+/fixtures/ @Rfaering
+/evaluation/ @Rfaering
+/reference/ @Rfaering
+/factory/ @Rfaering
+/package.json @Rfaering
+/package-lock.json @Rfaering
+/.node-version @Rfaering
+/.npmrc @Rfaering
