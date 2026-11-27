@@ -30,8 +30,14 @@
       "evaluationStrategy": [
         "syntax"
       ],
-      "status": "ready",
-      "evidence": [],
+      "status": "accepted",
+      "evidence": [
+        {
+          "report": "evidence/FC001.json",
+          "candidateSha256": "60b9cd8ab974eaeeb27389c44c9919ed952023e7a20c2ef4e03af9458cb3864d",
+          "acceptanceSha256": "8a6c9536cd26216de1797d8e5c7a8acbc1ec72285950eef4b14379c977412eb8"
+        }
+      ],
       "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
     },
     {

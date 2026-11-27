@@ -17,7 +17,7 @@ test('trusted-base acceptance accepts source-only candidate and rejects resealed
   commit();const base=git('rev-parse','HEAD');
   await writeFile(resolve(candidate,'src/index.mjs'),"export async function execute(){return {status:'ok',accepted:true,diagramType:'flowchart',diagnostics:[]}}\n");
   git('add','src/index.mjs');commit();
-  const acceptance=()=>spawnSync(process.execPath,[resolve(trusted,'factory/ci-accept.mjs'),'--candidate',candidate,'--base',base],{cwd:trusted,encoding:'utf8',windowsHide:true});
+  const acceptance=()=>spawnSync(process.execPath,[resolve(trusted,'factory/ci-accept.mjs'),'--candidate',candidate,'--base',base,'--capability','FC001'],{cwd:trusted,encoding:'utf8',windowsHide:true});
   const good=acceptance();assert.equal(good.status,0,good.stderr);assert.match(good.stdout,/"failed":0/);
   // Candidate can rewrite its own seal; the base-owned gate must still reject it.
   const path=resolve(candidate,'specs/policy.json');

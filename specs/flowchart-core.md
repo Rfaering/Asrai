@@ -1,6 +1,6 @@
 # Flowchart core v1
 
-This is a bounded compatibility target, not a claim of full Mermaid support. The executable corpus is `fixtures/flowchart/cases.json`; the dependency-ordered acceptance units are `specs/capabilities.json`. No product capabilities are accepted yet.
+This specification defines the flowchart compatibility target for the milestone. The executable corpus is `fixtures/flowchart/cases.json`. Capability order and acceptance status are recorded in `specs/capabilities.json`.
 
 ## Language boundary
 
