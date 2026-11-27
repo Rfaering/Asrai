@@ -1,11 +1,14 @@
 const header = /^(?:flowchart|graph)[ \t]+(TB|TD|BT|LR|RL)$/;
 const nodeIdentifier = /^[A-Za-z_][A-Za-z0-9_]*/;
 const nodeShapes = {
-  '[': { closing: ']', shape: 'rect' },
-  '(': { closing: ')', shape: 'rounded' },
-  '{': { closing: '}', shape: 'diamond' },
+  '[': { closing: ']', shape: 'rect', alternateOpeners: ['[', '(', '/', '\\'] },
+  '(': { closing: ')', shape: 'rounded', alternateOpeners: ['[', '('] },
+  '{': { closing: '}', shape: 'diamond', alternateOpeners: ['{'] },
 };
-const edgeOperator = /^(?:-->|---)(?![-<>])/;
+// A directly attached o or x extends the open operator to an unsupported link type.
+const edgeOperator = /^(?:-->(?![-<>])|---(?![-<>ox]))/;
+const quotedLabel = /^"([^"]*)"\s*$/;
+const plainLabelDelimiters = /[\[\](){}"]/;
 
 function reject(line, column, message, code = 'ASRAI_SYNTAX') {
   return {
@@ -24,90 +27,108 @@ function findLabelEnd(text, closing) {
   return text.indexOf(closing, 1);
 }
 
-// Diagnose malformed edges even while complete edge statements are unsupported.
-function diagnoseNodeSuffix(suffix, line, column) {
-  let rest = suffix;
-  while (rest) {
-    const closing = nodeShapes[rest[0]]?.closing;
-    if (closing) {
-      const labelEnd = findLabelEnd(rest, closing);
-      if (labelEnd === -1) {
-        return reject(line, column + suffix.length - rest.length, `Expected ${closing} to close the node label.`);
-      }
-      rest = rest.slice(labelEnd + 1).trimStart();
-    }
-
-    const operator = edgeOperator.exec(rest)?.[0];
-    if (!operator) return;
-
-    const operatorColumn = column + suffix.length - rest.length;
-    rest = rest.slice(operator.length).trimStart();
-    if (rest.startsWith('|')) {
-      if (operator !== '-->') return;
-      const labelEnd = findLabelEnd(rest, '|');
-      if (labelEnd === -1) {
-        return reject(line, column + suffix.length - rest.length, 'Expected | to close the edge label.');
-      }
-      rest = rest.slice(labelEnd + 1).trimStart();
-    }
-
-    const target = nodeIdentifier.exec(rest)?.[0];
-    if (!target) return reject(line, operatorColumn, 'Expected an edge target after the edge operator.');
-    if (target === 'end') {
-      return reject(line, column + suffix.length - rest.length, 'The identifier end is reserved.');
-    }
-    rest = rest.slice(target.length).trimStart();
+function parseLabel(text, closing, kind, line, column) {
+  const labelEnd = findLabelEnd(text, closing);
+  if (labelEnd === -1) {
+    return reject(line, column, `Expected ${closing} to close the ${kind} label.`);
   }
+  if (nodeShapes[text[0]]?.alternateOpeners.includes(text[1])) {
+    return reject(line, column, 'Only rectangle, rounded and diamond shapes are supported.', 'ASRAI_UNSUPPORTED');
+  }
+  let label = text.slice(1, labelEnd);
+  if (label.startsWith('"')) {
+    const quoted = quotedLabel.exec(label);
+    if (!quoted) {
+      return reject(line, column, `Only one quoted label is supported per ${kind}.`, 'ASRAI_UNSUPPORTED');
+    }
+    label = quoted[1];
+  } else if (plainLabelDelimiters.test(label)) {
+    return reject(line, column, `Expected a plain or double-quoted ${kind} label.`);
+  }
+  if (!label) return reject(line, column, `Expected text inside the ${kind} label.`);
+  return { label: label.trim(), rest: text.slice(labelEnd + 1).trimStart() };
 }
 
-function parseNodeStatement(statement, line, column) {
-  const id = nodeIdentifier.exec(statement)?.[0];
+function parseNode(text, line, column, operatorColumn) {
+  const id = nodeIdentifier.exec(text)?.[0];
   if (!id || id === 'end') {
+    if (operatorColumn !== undefined) {
+      return id === 'end'
+        ? reject(line, column, 'The identifier end is reserved.')
+        : reject(line, operatorColumn, 'Expected an edge target after the edge operator.');
+    }
     return reject(line, column, 'Expected an ASCII node identifier other than end.');
   }
 
-  const suffix = statement.slice(id.length).trimStart();
-  if (!suffix) return { node: { id, label: id, shape: 'rect' } };
-
-  const suffixColumn = column + statement.length - suffix.length;
-  const nodeShape = nodeShapes[suffix[0]];
-  const labelEnd = nodeShape ? findLabelEnd(suffix, nodeShape.closing) : -1;
-  if (nodeShape && labelEnd === -1) {
-    return reject(line, suffixColumn, `Expected ${nodeShape.closing} to close the node label.`);
+  const suffix = text.slice(id.length).trimStart();
+  const shape = nodeShapes[suffix[0]];
+  if (!shape) {
+    return { node: { id, label: id, shape: 'rect' }, rest: suffix, labeled: false, column };
   }
 
-  const rest = suffix.slice(labelEnd + 1).trimStart();
-  if (rest) {
-    const restColumn = suffixColumn + suffix.length - rest.length;
-    return diagnoseNodeSuffix(rest, line, restColumn)
-      ?? reject(line, suffixColumn, 'Only standalone bare or labeled nodes are supported.', 'ASRAI_UNSUPPORTED');
+  const labelColumn = column + text.length - suffix.length;
+  const parsed = parseLabel(suffix, shape.closing, 'node', line, labelColumn);
+  if (!Object.hasOwn(parsed, 'label')) return parsed;
+  if (labelColumn !== column + id.length) {
+    return reject(line, labelColumn, 'The label opener must immediately follow the node identifier.');
   }
-  if (suffixColumn !== column + id.length) {
-    return reject(line, suffixColumn, 'The label opener must immediately follow the node identifier.');
-  }
+  return { node: { id, label: parsed.label, shape: shape.shape }, rest: parsed.rest, labeled: true, column };
+}
 
-  let label = suffix.slice(1, labelEnd);
-  if (nodeShape.shape === 'rect' && /^[(/\\]/.test(label)) {
-    return reject(line, suffixColumn, 'Only rectangle, rounded and diamond shapes are supported.', 'ASRAI_UNSUPPORTED');
+function parseLink(text, line, column) {
+  const operator = edgeOperator.exec(text)?.[0];
+  if (!operator) {
+    return reject(line, column, 'Expected a supported edge operator or the end of the statement.', 'ASRAI_UNSUPPORTED');
   }
-  if (label.startsWith('"')) {
-    const quoted = /^"([^"]*)"\s*$/.exec(label);
-    if (!quoted) {
-      return reject(line, suffixColumn, 'Only one quoted label is supported per node.', 'ASRAI_UNSUPPORTED');
+  const directed = operator === '-->';
+  let label = '';
+  let rest = text.slice(operator.length).trimStart();
+  if (rest.startsWith('|')) {
+    const labelColumn = column + text.length - rest.length;
+    if (!directed) {
+      return reject(line, labelColumn, 'Pipe-delimited labels require a directed edge.', 'ASRAI_UNSUPPORTED');
     }
-    label = quoted[1];
-  } else if (/[\[\](){}"]/.test(label)) {
-    return reject(line, suffixColumn, 'Expected a plain or double-quoted node label.');
+    const parsed = parseLabel(rest, '|', 'edge', line, labelColumn);
+    if (!Object.hasOwn(parsed, 'label')) return parsed;
+    ({ label, rest } = parsed);
   }
-  if (!label) return reject(line, suffixColumn, 'Expected text inside the node label.');
 
-  return { node: { id, label: label.trim(), shape: nodeShape.shape } };
+  const target = parseNode(rest, line, column + text.length - rest.length, column);
+  if (!target.node) return target;
+  return { target, label, directed };
+}
+
+function parseStatement(statement, line, column) {
+  const source = parseNode(statement, line, column);
+  if (!source.node) return source;
+  if (!source.rest) return { endpoints: [source] };
+
+  const link = parseLink(source.rest, line, column + statement.length - source.rest.length);
+  if (!link.target) return link;
+  const { target, label, directed } = link;
+  if (target.rest) {
+    // Keep precise syntax diagnostics for malformed chains outside this increment.
+    let rest = target.rest;
+    while (edgeOperator.test(rest)) {
+      const next = parseLink(rest, line, column + statement.length - rest.length);
+      if (!next.target) return next;
+      rest = next.target.rest;
+    }
+    return reject(line, column + statement.length - target.rest.length,
+      'Unexpected syntax after the first edge target.', 'ASRAI_UNSUPPORTED');
+  }
+
+  return {
+    endpoints: [source, target],
+    edge: { source: source.node.id, target: target.node.id, label, directed },
+  };
 }
 
 export function parseFlowchart(source) {
   const lines = source.split(/\r?\n/);
   let direction;
   const nodes = new Map();
+  const edges = [];
 
   for (const [index, line] of lines.entries()) {
     const trimmedStart = line.trimStart();
@@ -125,14 +146,19 @@ export function parseFlowchart(source) {
       continue;
     }
 
-    const result = parseNodeStatement(statement, lineNumber, column);
-    if (!result.node) return result;
+    const result = parseStatement(statement, lineNumber, column);
+    if (!result.endpoints) return result;
 
-    const { node } = result;
-    if (nodes.has(node.id)) {
-      return reject(lineNumber, column, 'Node redeclarations are unsupported.', 'ASRAI_UNSUPPORTED');
+    for (const endpoint of result.endpoints) {
+      const { node, labeled } = endpoint;
+      const declared = labeled || !result.edge;
+      const existing = nodes.get(node.id);
+      if (declared && existing?.declared) {
+        return reject(lineNumber, endpoint.column, 'Node redeclarations are unsupported.', 'ASRAI_UNSUPPORTED');
+      }
+      if (declared || !existing) nodes.set(node.id, { node, declared });
     }
-    nodes.set(node.id, node);
+    if (result.edge) edges.push(result.edge);
   }
 
   if (!nodes.size) {
@@ -144,8 +170,8 @@ export function parseFlowchart(source) {
     model: {
       type: 'flowchart',
       direction,
-      nodes: [...nodes.values()],
-      edges: [],
+      nodes: [...nodes.values()].map(({ node }) => node),
+      edges,
     },
   };
 }

@@ -25,6 +25,8 @@ The FC003 candidate adds `parse` for that same input. The model has one rectangu
 
 The FC004 candidate accepts newline-separated standalone nodes with distinct identifiers. Attach `[label]`, `(label)`, or `{label}` directly to the identifier to select a rectangle, rounded node, or diamond. Plain and double-quoted labels support Unicode. The parser trims surrounding whitespace, preserves interior text, and returns nodes in source order. Double quotes allow shape delimiters within the label text. The adapter decodes standard input as a UTF-8 stream so a character split across input chunks survives intact. Edges, redeclarations, expanded shapes, and compound labels are outside this increment.
 
+The FC005 candidate parses one `-->`, `---`, or `-->|label|` edge per statement. Each endpoint can use the FC004 node shapes. An undeclared bare endpoint creates a rectangular node labeled with its identifier, and its first declaration can supply a shape and label. Bare edge references preserve declared node labels. Nodes follow first appearance and edges follow statement order, including parallel edges and self-links. Simple chains, labeled open edges, and repeated node declarations are outside this increment.
+
 For live differential evaluation and SVG inspection, install the separate oracle:
 
 ```sh
