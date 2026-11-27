@@ -1,0 +1,589 @@
+{
+  "schemaVersion": 1,
+  "mermaid": "11.17.2",
+  "playwright": "1.65.1",
+  "chromium": "159.0.8154.6",
+  "node": "v24.13.1",
+  "platform": "win32",
+  "configSha256": "eb999ef841dcfb36afff5096325e2295426a3c474ed41849e93ae744411e10d0",
+  "lockSha256": "163ddd3f90570798a9ba69a3b56e3fcf36bd3f47365990a02b42d183d65f966a",
+  "fixturesSha256": "ee24004f3930a43af26270976dabde78da15af005fab56bb9ba6c0d1873d6e8f",
+  "adapterSha256": "099fabde1eeb4f56da593ef3d644bb8f95b91bb05afb5db94afca8fc71fc07fa",
+  "cliSha256": "02eb6c5af2d84b2d45bf7b8d617fbf892eda9e602000fd38f8289404ebe09da5",
+  "failures": 0,
+  "observations": [
+    {
+      "id": "header-tb",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "header-td",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "header-bt",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "BT",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "header-lr",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "header-rl",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "RL",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "graph-alias",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "invalid-direction",
+      "accepted": false,
+      "failures": []
+    },
+    {
+      "id": "invalid-shape",
+      "accepted": false,
+      "failures": []
+    },
+    {
+      "id": "invalid-edge",
+      "accepted": false,
+      "failures": []
+    },
+    {
+      "id": "reserved-end",
+      "accepted": false,
+      "failures": []
+    },
+    {
+      "id": "empty-source",
+      "accepted": false,
+      "failures": []
+    },
+    {
+      "id": "labels-shapes",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Next",
+            "shape": "rounded"
+          },
+          {
+            "id": "C",
+            "label": "Choose",
+            "shape": "diamond"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "unicode-label",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Hej æøå 世界",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    },
+    {
+      "id": "edge-label",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Finish",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "yes",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 292.03125 63",
+        "nodeCount": 2,
+        "edgeCount": 1
+      },
+      "svgSha256": "b674c6996f89627be28c3acf28a27f4a4e3a6aca8a760ec90a5a681be0b48386",
+      "failures": []
+    },
+    {
+      "id": "open-edge",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": false
+          }
+        ]
+      },
+      "failures": []
+    },
+    {
+      "id": "formatting",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Finish",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "failures": []
+    },
+    {
+      "id": "redeclaration-chain",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "New",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          },
+          {
+            "id": "C",
+            "label": "C",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "B",
+            "target": "C",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "failures": []
+    },
+    {
+      "id": "layout-tb",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 88 160",
+        "nodeCount": 2,
+        "edgeCount": 1
+      },
+      "svgSha256": "9fedd0b52e180a2fa12ee19f86cc9d25e8bd52e57afed9168ea8b875e9fdb706",
+      "failures": []
+    },
+    {
+      "id": "layout-bt",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "BT",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 88 160",
+        "nodeCount": 2,
+        "edgeCount": 1
+      },
+      "svgSha256": "ec1c8f4fefb200b31d7877b50ac399367277c3a6cf4a31a8747c9058cfa6e6f5",
+      "failures": []
+    },
+    {
+      "id": "layout-lr",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 208.671875 63",
+        "nodeCount": 2,
+        "edgeCount": 1
+      },
+      "svgSha256": "d1899afc05b5cb9d15a07834d59a621bb4eb2d6145cd999f6dc4162e62f16e89",
+      "failures": []
+    },
+    {
+      "id": "layout-rl",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "RL",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 208.671875 63",
+        "nodeCount": 2,
+        "edgeCount": 1
+      },
+      "svgSha256": "be134d828126e76d7a2645ac471deefb8fc1ed1bbce2d0cefcbc6c0e212328a3",
+      "failures": []
+    },
+    {
+      "id": "cycle-disconnected",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          },
+          {
+            "id": "C",
+            "label": "C",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "B",
+            "target": "A",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 208.671875 160",
+        "nodeCount": 3,
+        "edgeCount": 2
+      },
+      "svgSha256": "0683b722a844e9a02cc78a75752695ee79ed01c802b0e7d044575ec4714fa41e",
+      "failures": []
+    },
+    {
+      "id": "self-parallel",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "A",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      },
+      "visual": {
+        "viewBox": "0 0 162.7218780517578 210.15000915527344",
+        "nodeCount": 2,
+        "edgeCount": 3
+      },
+      "svgSha256": "c7bca9b77e9682bfa1d533d5141c93234c18140f91b5762852fbb15ac3245ea3",
+      "failures": []
+    },
+    {
+      "id": "hostile-label",
+      "accepted": true,
+      "diagramType": "flowchart-v2",
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "<img src=\"x\">",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      },
+      "failures": []
+    }
+  ]
+}

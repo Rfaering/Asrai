@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, cp, readFile, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { resolve, relative } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { root } from '../lib/io.mjs';
+test('trusted-base acceptance accepts source-only candidate and rejects resealed contract tampering',async()=>{
+  const directory=await mkdtemp(resolve(tmpdir(),'asrai-trust-'));
+  const trusted=resolve(directory,'trusted'),candidate=resolve(directory,'candidate');
+  const filter=source=>!relative(root,source).split(/[\\/]/).some(part=>['.git','node_modules','artifacts','.factory'].includes(part));
+  await cp(root,trusted,{recursive:true,filter});
+  await cp(root,candidate,{recursive:true,filter});
+  const git=(...args)=>{const r=spawnSync('git',['-C',candidate,...args],{encoding:'utf8',windowsHide:true});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+  git('init','--quiet');git('config','core.autocrlf','false');git('add','--all');
+  const commit=()=>git('-c','user.name=Asrai Harness Test','-c','user.email=asrai-test@example.invalid','commit','--quiet','-m','Test-only fixture');
+  commit();const base=git('rev-parse','HEAD');
+  await writeFile(resolve(candidate,'src/index.mjs'),"export async function execute(){return {status:'ok',accepted:true,diagramType:'flowchart',diagnostics:[]}}\n");
+  git('add','src/index.mjs');commit();
+  const acceptance=()=>spawnSync(process.execPath,[resolve(trusted,'factory/ci-accept.mjs'),'--candidate',candidate,'--base',base],{cwd:trusted,encoding:'utf8',windowsHide:true});
+  const good=acceptance();assert.equal(good.status,0,good.stderr);assert.match(good.stdout,/"failed":0/);
+  // Candidate can rewrite its own seal; the base-owned gate must still reject it.
+  const path=resolve(candidate,'specs/policy.json');
+  const policy=JSON.parse(await readFile(path,'utf8'));policy.candidateTimeoutMs=9000;await writeFile(path,JSON.stringify(policy,null,2)+'\n');
+  const reseal=spawnSync(process.execPath,[resolve(candidate,'factory/integrity.mjs'),'seal'],{cwd:candidate,encoding:'utf8',windowsHide:true});assert.equal(reseal.status,0,reseal.stderr);
+  git('add','--all');commit();const rejected=acceptance();
+  assert.notEqual(rejected.status,0);assert.match(rejected.stderr,/Protected contract change/);
+  const trustedCases=resolve(trusted,'fixtures/flowchart/cases.json');await writeFile(trustedCases,(await readFile(trustedCases,'utf8'))+'\n');
+  const corrupt=spawnSync(process.execPath,[resolve(trusted,'factory/integrity.mjs'),'verify'],{cwd:trusted,encoding:'utf8',windowsHide:true});
+  assert.notEqual(corrupt.status,0);assert.match(corrupt.stderr,/Acceptance files changed/);
+});

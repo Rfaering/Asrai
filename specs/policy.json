@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "milestone": "flowchart-core-v1",
+  "seed": 1729,
+  "candidateTimeoutMs": 3000,
+  "maxOutputBytes": 2000000,
+  "benchmark": {
+    "samples": 5,
+    "hardTimeoutMs": 3000,
+    "advisoryMedianMs": 1000
+  },
+  "protectedPaths": [
+    "specs/",
+    "fixtures/",
+    "evaluation/",
+    "reference/",
+    "factory/",
+    ".github/",
+    "AGENTS.md",
+    "package.json",
+    "package-lock.json",
+    ".node-version",
+    ".npmrc"
+  ],
+  "supportedOperations": [
+    "validate",
+    "parse",
+    "layout",
+    "render"
+  ]
+}

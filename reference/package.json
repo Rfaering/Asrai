@@ -1,0 +1,13 @@
+{
+  "name": "asrai-mermaid-oracle",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.13.1 <25"
+  },
+  "dependencies": {
+    "mermaid": "11.17.2",
+    "playwright": "1.65.1"
+  }
+}

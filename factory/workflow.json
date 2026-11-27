@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "stages": [
+    { "id": "discover", "role": "discovery", "inputs": ["pinned reference", "unresolved behaviour"], "command": "npm run reference:capture", "outputs": ["observations", "minimal reproduction", "discovery note"], "completeWhen": "Observed behaviour is reproducible; contradictions and version are recorded." },
+    { "id": "specify", "role": "specification-review", "inputs": ["observations", "product boundary"], "outputs": ["authored fixtures", "capability criteria", "explicit intentional differences"], "completeWhen": "Reference verification passes and independent review accepts the new contract; seal changes separately from implementation." },
+    { "id": "decompose", "role": "planning", "inputs": ["reviewed specification"], "command": "npm run factory:next", "outputs": ["acyclic capability dependencies", ".factory/task.json"], "completeWhen": "One smallest ready capability has a bounded input/output contract and executable checks." },
+    { "id": "implement", "role": "implementation", "inputs": ["task packet", "trusted acceptance baseline"], "outputs": ["src changes", "developer tests", "decision/failure notes"], "completeWhen": "Selected capability works locally; no acceptance files were edited to pass." },
+    { "id": "evaluate", "role": "independent-evaluator", "inputs": ["candidate source", "trusted base harness"], "command": "npm run evaluate -- --candidate <candidate>/src/adapter.mjs --capability <id>", "outputs": ["digest-bound report", "counterexamples", "visual/performance artifacts"], "completeWhen": "All selected, dependency and accepted-regression checks pass; report is produced by trusted evaluation." },
+    { "id": "correct", "role": "implementation", "inputs": ["failed report", "smallest counterexample"], "outputs": ["categorized failure", "focused correction"], "completeWhen": "Return to independent evaluation. After three attempts without improvement, record blockage and select independent ready work." },
+    { "id": "accept", "role": "independent-evaluator", "inputs": ["passing trusted report", "reviewed source/criteria diff"], "outputs": ["accepted capability with evidence path and digest", "regression coverage", "updated acceptance seal"], "completeWhen": "Source and acceptance digests match the tested candidate; accepted dependencies and external review are verified." }
+  ],
+  "failureCategories": ["specification ambiguity", "oracle drift", "syntax", "semantics", "geometry", "svg/security", "determinism", "resource limit", "infrastructure"],
+  "measurements": ["checks passed/total", "attempts", "wall time", "candidate digest", "acceptance digest", "human interventions", "failure category", "advisory quality/performance"]
+}

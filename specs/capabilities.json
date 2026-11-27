@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "capabilities": [
+    {
+      "id": "FC001",
+      "priority": 1,
+      "milestone": "flowchart-core-v1",
+      "description": "Accept flowchart/graph headers, five direction spellings and a bare ASCII node",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "header-tb",
+          "header-td",
+          "header-bt",
+          "header-lr",
+          "header-rl",
+          "graph-alias"
+        ]
+      },
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "header-tb:validate",
+        "header-td:validate",
+        "header-bt:validate",
+        "header-lr:validate",
+        "header-rl:validate",
+        "graph-alias:validate"
+      ],
+      "evaluationStrategy": [
+        "syntax"
+      ],
+      "status": "ready",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC002",
+      "priority": 2,
+      "milestone": "flowchart-core-v1",
+      "description": "Reject malformed supported syntax with structured diagnostics",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "invalid-direction",
+          "invalid-shape",
+          "invalid-edge",
+          "reserved-end",
+          "empty-source"
+        ]
+      },
+      "dependencies": [
+        "FC001"
+      ],
+      "acceptanceCriteria": [
+        "invalid-direction:validate",
+        "invalid-shape:validate",
+        "invalid-edge:validate",
+        "reserved-end:validate",
+        "empty-source:validate"
+      ],
+      "evaluationStrategy": [
+        "syntax",
+        "diagnostics"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC003",
+      "priority": 3,
+      "milestone": "flowchart-core-v1",
+      "description": "Produce a canonical model for bare nodes and normalize TD to TB",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "header-tb",
+          "header-td",
+          "header-bt",
+          "header-lr",
+          "header-rl",
+          "graph-alias"
+        ]
+      },
+      "dependencies": [
+        "FC001"
+      ],
+      "acceptanceCriteria": [
+        "header-tb:parse",
+        "header-td:parse",
+        "header-bt:parse",
+        "header-lr:parse",
+        "header-rl:parse",
+        "graph-alias:parse"
+      ],
+      "evaluationStrategy": [
+        "semantics"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC004",
+      "priority": 4,
+      "milestone": "flowchart-core-v1",
+      "description": "Parse rectangle, rounded and diamond nodes with plain and quoted Unicode labels",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "labels-shapes",
+          "unicode-label"
+        ]
+      },
+      "dependencies": [
+        "FC003",
+        "FC002"
+      ],
+      "acceptanceCriteria": [
+        "labels-shapes:validate",
+        "labels-shapes:parse",
+        "unicode-label:parse"
+      ],
+      "evaluationStrategy": [
+        "semantics"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC005",
+      "priority": 5,
+      "milestone": "flowchart-core-v1",
+      "description": "Parse directed/open edges, implicit endpoints and pipe-delimited edge labels",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "edge-label",
+          "open-edge"
+        ]
+      },
+      "dependencies": [
+        "FC004"
+      ],
+      "acceptanceCriteria": [
+        "edge-label:validate",
+        "edge-label:parse",
+        "open-edge:parse"
+      ],
+      "evaluationStrategy": [
+        "semantics"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC006",
+      "priority": 6,
+      "milestone": "flowchart-core-v1",
+      "description": "Handle newline/semicolon statements and full-line comments",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "formatting"
+        ]
+      },
+      "dependencies": [
+        "FC005"
+      ],
+      "acceptanceCriteria": [
+        "formatting:validate",
+        "formatting:parse"
+      ],
+      "evaluationStrategy": [
+        "syntax",
+        "semantics"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC007",
+      "priority": 7,
+      "milestone": "flowchart-core-v1",
+      "description": "Apply last explicit label and preserve chained-edge semantics",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "redeclaration-chain"
+        ]
+      },
+      "dependencies": [
+        "FC006"
+      ],
+      "acceptanceCriteria": [
+        "redeclaration-chain:parse",
+        "generated:statement-permutations"
+      ],
+      "evaluationStrategy": [
+        "semantics",
+        "property"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC008",
+      "priority": 8,
+      "milestone": "flowchart-core-v1",
+      "description": "Lay out two-node graphs in four directions with attached edge paths",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "edge-label",
+          "layout-tb",
+          "layout-bt",
+          "layout-lr",
+          "layout-rl"
+        ]
+      },
+      "dependencies": [
+        "FC005"
+      ],
+      "acceptanceCriteria": [
+        "edge-label:layout",
+        "layout-tb:layout",
+        "layout-bt:layout",
+        "layout-lr:layout",
+        "layout-rl:layout"
+      ],
+      "evaluationStrategy": [
+        "geometry"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC009",
+      "priority": 9,
+      "milestone": "flowchart-core-v1",
+      "description": "Lay out cycles, disconnected nodes, self-links and parallel edges",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "cycle-disconnected",
+          "self-parallel"
+        ]
+      },
+      "dependencies": [
+        "FC008",
+        "FC007"
+      ],
+      "acceptanceCriteria": [
+        "cycle-disconnected:layout",
+        "self-parallel:layout"
+      ],
+      "evaluationStrategy": [
+        "geometry"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC010",
+      "priority": 10,
+      "milestone": "flowchart-core-v1",
+      "description": "Render static accessible SVG with semantic label coverage",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "edge-label"
+        ]
+      },
+      "dependencies": [
+        "FC008"
+      ],
+      "acceptanceCriteria": [
+        "edge-label:render"
+      ],
+      "evaluationStrategy": [
+        "svg",
+        "visual"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC011",
+      "priority": 11,
+      "milestone": "flowchart-core-v1",
+      "description": "Render hostile labels inertly without active content or external resources",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "hostile-label"
+        ]
+      },
+      "dependencies": [
+        "FC010"
+      ],
+      "acceptanceCriteria": [
+        "hostile-label:security"
+      ],
+      "evaluationStrategy": [
+        "security"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC012",
+      "priority": 12,
+      "milestone": "flowchart-core-v1",
+      "description": "Produce identical model, scene and SVG across fresh processes",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "edge-label"
+        ]
+      },
+      "dependencies": [
+        "FC011",
+        "FC009"
+      ],
+      "acceptanceCriteria": [
+        "edge-label:determinism",
+        "generated:alpha-renaming",
+        "generated:whitespace-invariance"
+      ],
+      "evaluationStrategy": [
+        "determinism",
+        "property"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC013",
+      "priority": 13,
+      "milestone": "flowchart-core-v1",
+      "description": "Measure bounded execution of the initial corpus",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": [
+          "edge-label"
+        ]
+      },
+      "dependencies": [
+        "FC012"
+      ],
+      "acceptanceCriteria": [
+        "edge-label:benchmark"
+      ],
+      "evaluationStrategy": [
+        "performance"
+      ],
+      "status": "pending",
+      "evidence": [],
+      "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
+    },
+    {
+      "id": "FC014",
+      "priority": 14,
+      "milestone": "later",
+      "description": "Discover and specify nested subgraphs",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": []
+      },
+      "dependencies": [
+        "FC013"
+      ],
+      "acceptanceCriteria": [],
+      "evaluationStrategy": [
+        "discovery"
+      ],
+      "status": "deferred",
+      "evidence": [],
+      "completion": "Requires a separately reviewed specification and executable acceptance cases before implementation."
+    },
+    {
+      "id": "FC015",
+      "priority": 15,
+      "milestone": "later",
+      "description": "Discover and specify a small style/theme configuration",
+      "referenceBehaviour": {
+        "version": "11.17.2",
+        "source": "docs/reference-discovery.md",
+        "fixtures": []
+      },
+      "dependencies": [
+        "FC013"
+      ],
+      "acceptanceCriteria": [],
+      "evaluationStrategy": [
+        "discovery"
+      ],
+      "status": "deferred",
+      "evidence": [],
+      "completion": "Requires a separately reviewed specification and executable acceptance cases before implementation."
+    }
+  ]
+}

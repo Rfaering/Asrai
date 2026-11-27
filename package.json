@@ -1,0 +1,20 @@
+{
+  "name": "asrai-factory",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.13.1 <25" },
+  "scripts": {
+    "check": "node factory/check.mjs",
+    "test": "node factory/test.mjs",
+    "factory:next": "node factory/cli.mjs next",
+    "factory:status": "node factory/cli.mjs status",
+    "evaluate": "node evaluation/run.mjs",
+    "reference:install": "npm ci --prefix reference --ignore-scripts",
+    "reference:browser": "npm exec --prefix reference -- playwright install chromium",
+    "reference:verify": "node reference/cli.mjs verify",
+    "reference:capture": "node reference/cli.mjs capture",
+    "acceptance:seal": "node factory/integrity.mjs seal",
+    "acceptance:verify": "node factory/integrity.mjs verify"
+  }
+}

@@ -1,0 +1,1335 @@
+[
+  {
+    "id": "header-tb",
+    "source": "flowchart TB\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "header-td",
+    "source": "flowchart TD\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "header-bt",
+    "source": "flowchart BT\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "BT",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "BT",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "header-lr",
+    "source": "flowchart LR\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "header-rl",
+    "source": "flowchart RL\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "RL",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "RL",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "graph-alias",
+    "source": "graph LR\nA",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC001",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC003",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "invalid-direction",
+    "source": "flowchart ZZ\nA",
+    "oracle": {
+      "accepted": false
+    },
+    "checks": [
+      {
+        "capability": "FC002",
+        "operation": "validate",
+        "expected": {
+          "accepted": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "invalid-shape",
+    "source": "flowchart TB\nA[broken",
+    "oracle": {
+      "accepted": false
+    },
+    "checks": [
+      {
+        "capability": "FC002",
+        "operation": "validate",
+        "expected": {
+          "accepted": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "invalid-edge",
+    "source": "flowchart TB\nA -->",
+    "oracle": {
+      "accepted": false
+    },
+    "checks": [
+      {
+        "capability": "FC002",
+        "operation": "validate",
+        "expected": {
+          "accepted": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "reserved-end",
+    "source": "flowchart TB\nend",
+    "oracle": {
+      "accepted": false
+    },
+    "checks": [
+      {
+        "capability": "FC002",
+        "operation": "validate",
+        "expected": {
+          "accepted": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "empty-source",
+    "source": "",
+    "oracle": {
+      "accepted": false
+    },
+    "checks": [
+      {
+        "capability": "FC002",
+        "operation": "validate",
+        "expected": {
+          "accepted": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "labels-shapes",
+    "source": "flowchart LR\nA[Start]\nB(Next)\nC{Choose}",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Next",
+            "shape": "rounded"
+          },
+          {
+            "id": "C",
+            "label": "Choose",
+            "shape": "diamond"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC004",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC004",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Next",
+                "shape": "rounded"
+              },
+              {
+                "id": "C",
+                "label": "Choose",
+                "shape": "diamond"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "unicode-label",
+    "source": "flowchart TB\nA[\"Hej æøå 世界\"]",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Hej æøå 世界",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC004",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Hej æøå 世界",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edge-label",
+    "source": "flowchart LR\nA[Start] -->|yes| B[Finish]",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Finish",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "yes",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC005",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC005",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "yes",
+                "directed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "capability": "FC008",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "yes",
+                "directed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "capability": "FC010",
+        "operation": "render",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "yes",
+                "directed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "capability": "FC012",
+        "operation": "determinism",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "yes",
+                "directed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "capability": "FC013",
+        "operation": "benchmark",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "yes",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "open-edge",
+    "source": "flowchart TB\nA --- B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": false
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC005",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": false
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "formatting",
+    "source": "graph TD;\n%% a comment\nA[Start]; B[Finish]; A --> B;",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "Start",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "Finish",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC006",
+        "operation": "validate",
+        "expected": {
+          "accepted": true
+        }
+      },
+      {
+        "capability": "FC006",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "Start",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "Finish",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "redeclaration-chain",
+    "source": "flowchart TB\nA[Old]\nA[New]\nA --> B --> C",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "New",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          },
+          {
+            "id": "C",
+            "label": "C",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "B",
+            "target": "C",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC007",
+        "operation": "parse",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "New",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              },
+              {
+                "id": "C",
+                "label": "C",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              },
+              {
+                "source": "B",
+                "target": "C",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "layout-tb",
+    "source": "flowchart TB\nA --> B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC008",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "layout-bt",
+    "source": "flowchart BT\nA --> B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "BT",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC008",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "BT",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "layout-lr",
+    "source": "flowchart LR\nA --> B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC008",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "layout-rl",
+    "source": "flowchart RL\nA --> B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "RL",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC008",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "RL",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "cycle-disconnected",
+    "source": "flowchart LR\nA --> B\nB --> A\nC",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          },
+          {
+            "id": "C",
+            "label": "C",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "B",
+            "target": "A",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC009",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              },
+              {
+                "id": "C",
+                "label": "C",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              },
+              {
+                "source": "B",
+                "target": "A",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "self-parallel",
+    "source": "flowchart TB\nA --> A\nA --> B\nA --> B",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "A",
+            "shape": "rect"
+          },
+          {
+            "id": "B",
+            "label": "B",
+            "shape": "rect"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A",
+            "target": "A",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          },
+          {
+            "source": "A",
+            "target": "B",
+            "label": "",
+            "directed": true
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC009",
+        "operation": "layout",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "shape": "rect"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "shape": "rect"
+              }
+            ],
+            "edges": [
+              {
+                "source": "A",
+                "target": "A",
+                "label": "",
+                "directed": true
+              },
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              },
+              {
+                "source": "A",
+                "target": "B",
+                "label": "",
+                "directed": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "hostile-label",
+    "source": "flowchart TB\nA[\"<img src=x onerror=alert(1)>\"]",
+    "oracle": {
+      "accepted": true,
+      "model": {
+        "type": "flowchart",
+        "direction": "TB",
+        "nodes": [
+          {
+            "id": "A",
+            "label": "<img src=\"x\">",
+            "shape": "rect"
+          }
+        ],
+        "edges": []
+      }
+    },
+    "checks": [
+      {
+        "capability": "FC011",
+        "operation": "security",
+        "expected": {
+          "model": {
+            "type": "flowchart",
+            "direction": "TB",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "<img src=x onerror=alert(1)>",
+                "shape": "rect"
+              }
+            ],
+            "edges": []
+          }
+        }
+      }
+    ],
+    "compatibilityNote": "Intentional boundary: reference sanitizes HTML-like labels; Asrai must render the original label as inert text."
+  }
+]

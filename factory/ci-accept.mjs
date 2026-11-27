@@ -1,0 +1,23 @@
+// Run this script from the TRUSTED base checkout, never the candidate checkout.
+import { spawnSync } from 'node:child_process';
+import { resolve } from 'node:path';
+import { json, options, root } from '../evaluation/lib/io.mjs';
+import { evaluate } from '../evaluation/run.mjs';
+import { verifyAcceptance } from './integrity.mjs';
+const opts=options(process.argv.slice(2));
+if(!opts.candidate || !opts.base)throw new Error('Required: --candidate <checkout> --base <trusted SHA>');
+if(!/^[a-f0-9]{40}$/.test(opts.base))throw new Error('Expected a full trusted commit SHA');
+await verifyAcceptance();
+const candidate=resolve(opts.candidate);
+const diff=spawnSync('git',['-C',candidate,'diff','--name-only','--no-renames',opts.base,'HEAD'],{encoding:'utf8',windowsHide:true});
+if(diff.status!==0)throw new Error(diff.stderr);
+const policy=await json('specs/policy.json');
+const changed=diff.stdout.trim().split('\n').filter(Boolean);
+const protectedChanges=changed.filter(path=>policy.protectedPaths.some(p=>p.endsWith('/')?path.startsWith(p):path===p));
+if(protectedChanges.length)throw new Error(`Protected contract change requires a separate specification/evaluator review:\n${protectedChanges.join('\n')}`);
+const backlog=(await json('specs/capabilities.json')).capabilities;
+const ready=backlog.filter(c=>!['accepted','deferred'].includes(c.status)&&c.dependencies.every(id=>backlog.find(d=>d.id===id)?.status==='accepted')).sort((a,b)=>a.priority-b.priority)[0];
+const requested=opts.capability??ready?.id;
+if(!requested)throw new Error('No eligible capability to evaluate');
+const report=await evaluate({candidate:resolve(candidate,'src/adapter.mjs'),capability:requested,output:resolve(root,'artifacts/trusted-acceptance')});
+console.log(JSON.stringify(report.summary));process.exitCode=report.summary.failed?1:0;

@@ -1,0 +1,10 @@
+{
+  "startOnLoad": false,
+  "securityLevel": "strict",
+  "theme": "default",
+  "fontFamily": "Arial",
+  "deterministicIds": true,
+  "deterministicIDSeed": "asrai-oracle-v1",
+  "htmlLabels": false,
+  "flowchart": { "htmlLabels": false, "useMaxWidth": false, "defaultRenderer": "dagre-wrapper" }
+}
