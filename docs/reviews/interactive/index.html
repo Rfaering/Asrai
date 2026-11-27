@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Asrai · Review preview</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./review.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="frame topbar-inner">
+      <a class="brand" href="./"><span aria-hidden="true" class="mark"><i></i><i></i><i></i></span> Asrai</a>
+      <nav aria-label="Review sections">
+        <a href="#playground">Playground</a>
+        <a href="#tests">Test explorer</a>
+        <a href="#evidence">Evidence</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="frame">
+    <header class="intro">
+      <div>
+        <h1>Review preview</h1>
+        <p>FC004 <span aria-hidden="true">/</span> Flowchart node shapes and labels</p>
+      </div>
+      <a class="summary" id="summary" href="#tests" aria-live="polite">Loading evaluation…</a>
+    </header>
+    <p id="load-error" role="alert" hidden></p>
+
+    <section id="playground" aria-labelledby="playground-heading">
+      <div class="section-heading">
+        <div><h2 id="playground-heading">Playground</h2><p>Run the same source against both Asrai revisions.</p></div>
+        <span class="tag">Live comparison</span>
+      </div>
+      <div class="workbench">
+        <div class="toolbar">
+          <div id="phases" class="phases" role="group" aria-label="Pipeline operation">
+            <button type="button" data-operation="validate" aria-pressed="false">Validation</button>
+            <button type="button" data-operation="parse" aria-pressed="true">Model</button>
+            <button type="button" data-operation="layout" aria-pressed="false">Layout</button>
+            <button type="button" data-operation="render" aria-pressed="false">SVG</button>
+          </div>
+          <button type="submit" form="editor" id="run" class="primary" disabled>Run both</button>
+        </div>
+        <div class="comparison">
+          <form id="editor" class="sample">
+            <div class="pane-heading"><label for="source">Flowchart source</label><button type="button" id="reset" disabled>Reset example</button></div>
+            <textarea id="source" maxlength="16000" spellcheck="false" placeholder="Loading the worked example…" disabled></textarea>
+          </form>
+          <article class="result" aria-labelledby="base-heading">
+            <div class="pane-heading"><h3 id="base-heading">Before</h3><a id="base-link"></a></div>
+            <div class="output" id="base-output"></div>
+          </article>
+          <article class="result" aria-labelledby="candidate-heading">
+            <div class="pane-heading"><h3 id="candidate-heading">After</h3><a id="candidate-link"></a></div>
+            <div class="output" id="candidate-output"></div>
+          </article>
+        </div>
+        <p class="run-status" id="run-status" role="status">Loading the worked example…</p>
+      </div>
+    </section>
+
+    <section id="tests" aria-labelledby="tests-heading">
+      <div class="section-heading">
+        <div><h2 id="tests-heading">Test explorer</h2><p>Inspect the recorded verdict, expected result, and replayed Asrai response for each check.</p></div>
+        <label class="filter">Checks <select id="filter" disabled><option value="focus">FC004</option><option value="all">All checks</option><option value="fail">Failures</option></select></label>
+      </div>
+      <div class="test-grid">
+        <div id="case-list" role="group" aria-label="Evaluation cases"></div>
+        <div id="case-detail" class="case-detail"><p>Loading cases…</p></div>
+      </div>
+    </section>
+
+    <section id="evidence" aria-labelledby="evidence-heading">
+      <div class="section-heading"><div><h2 id="evidence-heading">Evaluation provenance</h2><p>The evaluator records verdicts. The preview replays the individual requests to display their responses.</p></div></div>
+      <dl id="provenance"></dl>
+      <a href="./report.json" download="asrai-fc004-report.json">Download evaluation report</a>
+    </section>
+  </main>
+</body>
+</html>
