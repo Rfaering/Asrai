@@ -146,8 +146,14 @@
       "evaluationStrategy": [
         "semantics"
       ],
-      "status": "pending",
-      "evidence": [],
+      "status": "accepted",
+      "evidence": [
+        {
+          "report": "evidence/FC004.json",
+          "candidateSha256": "7a8601879fa0d3dce83f7559c7d7dc48ce38adbbc5b0cd21edb9283d49d87221",
+          "acceptanceSha256": "dd12f30e8c2b9ebbf26ece8dd1a14213469313acde763ae68251d52797baab43"
+        }
+      ],
       "completion": "Every selected and dependency check passes; full accepted-capability regression passes; attach a report tied to candidate and acceptance digests."
     },
     {

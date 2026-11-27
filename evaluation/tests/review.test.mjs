@@ -9,7 +9,9 @@ test('review contract accepts a complete scoped description and rejects missing 
   assert.deepEqual(validateReview(body(),['src/index.mjs'],policy,caps).failures,[]);
   assert.ok(validateReview(body().replace('## Interfaces and responsibilities','## Files'),['src/index.mjs'],policy,caps).failures.length);
   assert.ok(validateReview(body('factory','none'),['src/index.mjs'],policy,caps).failures.length);
-  assert.ok(validateReview(body('implementation','FC005'),['src/index.mjs'],policy,caps).failures.length);
+  const blockedBacklog = caps.map(cap => cap.id === 'FC004' ? { ...cap, status: 'pending', evidence: [] } : cap);
+  assert.deepEqual(validateReview(body('implementation','FC005'),['src/index.mjs'],policy,blockedBacklog).failures,
+    ['Capability dependencies must be accepted before implementation.']);
   assert.ok(validateReview(body().replace('#2','#0'),['src/index.mjs'],policy,caps).failures.length);
   assert.throws(()=>classifyChanges(['src/index.mjs','specs/policy.json'],policy.protectedPaths),/separate PRs/);
   assert.equal(classifyChanges(['docs/reviews/FC001/output.svg'],policy.protectedPaths),'documentation');
