@@ -8,6 +8,11 @@ import { verifyAcceptance } from './integrity.mjs';
 const fixtures=await json('fixtures/flowchart/cases.json');
 const backlog=await json('specs/capabilities.json');
 const errors=validateBacklog(backlog,fixtures);
+try {
+  const links=await json('factory/github-issues.json');
+  const numbers=Object.values(links.issues??{});
+  if(links.schemaVersion!==1||!/^[-\w.]+\/[-\w.]+$/.test(links.repository)||numbers.some(n=>!Number.isInteger(n)||n<1)||new Set(numbers).size!==numbers.length||backlog.capabilities.some(c=>!links.issues?.[c.id])||Object.keys(links.issues??{}).some(id=>!backlog.capabilities.some(c=>c.id===id)))errors.push('Invalid or incomplete GitHub capability issue map');
+}catch(error){if(error.code!=='ENOENT')throw error;}
 for(const f of fixtures)if(f.oracle.model)normalizeModel(f.oracle.model);
 async function checkDirectory(directory) {
   for(const entry of await readdir(resolve(root,directory),{withFileTypes:true})) {

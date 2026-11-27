@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "repository": "Rfaering/Asrai",
+  "setupIssue": 1,
+  "issues": {
+    "FC001": 2,
+    "FC002": 3,
+    "FC003": 4,
+    "FC004": 5,
+    "FC005": 6,
+    "FC006": 7,
+    "FC007": 8,
+    "FC008": 9,
+    "FC009": 10,
+    "FC010": 11,
+    "FC011": 12,
+    "FC012": 13,
+    "FC013": 14,
+    "FC014": 15,
+    "FC015": 16
+  }
+}

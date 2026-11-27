@@ -1,0 +1,36 @@
+name: Incorrect behavior or output
+description: Report an input that produces an unexpected result.
+title: "Bug: "
+labels: ["kind:bug", "stage:discovery"]
+body:
+  - type: textarea
+    id: input
+    attributes:
+      label: Input and reproduction
+      description: Paste the smallest diagram or command that reproduces the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Explain what should happen. Add a labeled reference image or SVG if useful.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and evidence
+      description: Include actual output, an error, PNG/SVG, or a link to the failed PR check. Distinguish Asrai output from Mermaid output.
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Revision or pull request
+      placeholder: Commit SHA, PR URL, or unknown
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What does this prevent you from doing?

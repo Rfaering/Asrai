@@ -1,17 +1,23 @@
 name: Asrai factory
 on:
   push:
+    branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
 permissions:
   contents: read
 jobs:
   foundation:
+    name: Foundation (${{ matrix.os }})
     strategy:
       matrix:
         os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24.13.1
@@ -19,9 +25,13 @@ jobs:
       - run: npm run check
       - run: npm test
   oracle:
+    name: Mermaid oracle
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24.13.1
@@ -29,33 +39,82 @@ jobs:
       - run: npm exec --prefix reference -- playwright install --with-deps chromium
       - run: npm run reference:verify
       - run: node --test reference/tests/*.test.mjs
+      - run: node factory/summarize.mjs --report artifacts/reference/report.json
+        if: always()
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: oracle-evidence
           path: artifacts/
-  independent-acceptance:
+  review-context:
+    name: PR review contract
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      kind: ${{ steps.context.outputs.kind }}
+      capability: ${{ steps.context.outputs.capability }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           path: candidate
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           path: trusted
           ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24.13.1
-      - run: npm ci --prefix trusted/reference --ignore-scripts
-      - run: npm exec --prefix trusted/reference -- playwright install --with-deps chromium
-      - working-directory: trusted
-        run: node factory/ci-accept.mjs --candidate ../candidate --base ${{ github.event.pull_request.base.sha }}
+      - id: context
+        env:
+          REVIEW_EVENT: ${{ github.event_path }}
+        run: node candidate/factory/review.mjs --event "$REVIEW_EVENT" --trusted trusted --candidate candidate --output artifacts/review/context.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
+        with:
+          name: review-context
+          path: artifacts/review/
+  independent-acceptance:
+    name: Independent acceptance
+    needs: review-context
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: candidate
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: trusted
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.13.1
+      - working-directory: trusted
+        run: node factory/integrity.mjs verify
+      - run: npm ci --prefix trusted/reference --ignore-scripts
+        if: needs.review-context.outputs.kind == 'implementation'
+      - run: npm exec --prefix trusted/reference -- playwright install --with-deps chromium
+        if: needs.review-context.outputs.kind == 'implementation'
+      - working-directory: trusted
+        if: needs.review-context.outputs.kind == 'implementation'
+        run: node factory/ci-accept.mjs --candidate ../candidate --base ${{ github.event.pull_request.base.sha }} --capability ${{ needs.review-context.outputs.capability }}
+      - working-directory: candidate
+        if: always() && needs.review-context.outputs.kind == 'implementation'
+        run: node factory/summarize.mjs --report ../trusted/artifacts/trusted-acceptance/report.json
+      - if: needs.review-context.outputs.kind != 'implementation'
+        run: node -e "require('node:fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Acceptance boundary\n\nNo product source changes. This factory/documentation proposal requires owner review; no product capability is accepted by these checks.\n')"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && needs.review-context.outputs.kind == 'implementation'
         with:
           name: trusted-acceptance
           path: trusted/artifacts/

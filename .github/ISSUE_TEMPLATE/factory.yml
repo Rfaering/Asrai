@@ -1,0 +1,31 @@
+name: Factory, specification or evaluation improvement
+description: Improve how the factory discovers, implements or verifies work.
+title: "Factory: "
+labels: ["kind:factory", "stage:discovery"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and desired outcome
+      description: Explain the engineering or review problem and what a better result looks like.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Concrete example
+      description: Show a current failure, confusing review, missing check or desired workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: How to verify the improvement
+      description: Include observable acceptance criteria and an example of a failure the improvement should catch.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Acceptance boundary and impact
+      description: The agent must identify protected contract changes, affected interfaces, migration needs and owner review. Product criteria must not be weakened to hide failures.

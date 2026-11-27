@@ -4,6 +4,8 @@
 
 The software factory is established; diagram functionality is intentionally unimplemented. Start with [agent instructions](AGENTS.md) and the [development guide](docs/development.md).
 
+Manage work through [GitHub issues](https://github.com/Rfaering/Asrai/issues) and verify proposals in [pull requests](https://github.com/Rfaering/Asrai/pulls). The [GitHub workflow guide](docs/github-workflow.md) explains the issue forms, PR evidence format, owner review and acceptance boundaries.
+
 ```sh
 npm ci --ignore-scripts
 npm run check
