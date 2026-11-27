@@ -19,6 +19,8 @@ npm run evaluate -- --capability FC001
 
 This command intentionally exits **1** with six `unimplemented` failures in the foundation. Once FC001 is independently implemented, all six must pass. A full `npm run evaluate` is the milestone gap report and remains red until the milestone is complete. Do not change this to a zero exit merely to make CI green. The factory's own self-tests can be green while the product is entirely unimplemented.
 
+The FC001 candidate validates one bare ASCII node on a line after a `flowchart` or `graph` header with direction `TB`, `TD`, `BT`, `LR`, or `RL`. It accepts LF and CRLF line endings, surrounding whitespace, and blank lines. Validation rejections carry a one-based diagnostic. Shapes, edges, additional statements, comments, and semicolon separators are outside this increment. Parse, layout, and render are separate capabilities.
+
 For live differential evaluation and SVG inspection, install the separate oracle:
 
 ```sh
@@ -34,7 +36,7 @@ On Linux, Chromium system libraries may be needed: `npm exec --prefix reference 
 
 | Path | Responsibility |
 | --- | --- |
-| `src/` | Independent product boundary; currently just an unimplemented adapter |
+| `src/` | Independent product boundary and FC001 flowchart validation |
 | `reference/` | Isolated pinned Mermaid/Chromium environment and observed reference results |
 | `specs/` | Scope, protocol, policy, capability DAG, schema and acceptance seal |
 | `fixtures/flowchart/` | Authored, independently oracle-verified examples and expectations |
