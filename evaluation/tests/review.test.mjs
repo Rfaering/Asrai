@@ -18,8 +18,15 @@ test('review contract accepts a complete scoped description and rejects missing 
 });
 test('issue exports preserve capability criteria, dependencies, provenance and deferred scope',async()=>{
   const fixtures=await json('fixtures/flowchart/cases.json');
-  const first=capabilityIssue(caps[0],fixtures),dependent=capabilityIssue(caps[1],fixtures,{FC001:2}),deferred=capabilityIssue(caps.find(c=>c.id==='FC014'),fixtures);
+  const firstCapability = { ...caps[0], status: 'ready', evidence: [] };
+  const dependentCapability = { ...caps[1], status: 'pending', evidence: [] };
+  const links = { FC001: 2 };
+  const first = capabilityIssue(firstCapability, fixtures);
+  const dependent = capabilityIssue(dependentCapability, fixtures, links);
+  const deferred = capabilityIssue(caps.find(c => c.id === 'FC014'), fixtures);
   assert.ok(first.labels.includes('stage:ready'));assert.match(first.body,/header-tb:validate/);assert.match(first.body,/not an implemented result/);
   assert.match(dependent.body,/FC001: #2/);assert.ok(dependent.labels.includes('stage:blocked'));
+  assert.ok(capabilityIssue({ ...firstCapability, status: 'accepted' }, fixtures).labels.includes('stage:accepted'));
+  assert.ok(capabilityIssue(dependentCapability, fixtures, links, new Set(['FC001'])).labels.includes('stage:ready'));
   assert.ok(deferred.labels.includes('stage:deferred'));assert.match(deferred.body,/before implementation/);
 });

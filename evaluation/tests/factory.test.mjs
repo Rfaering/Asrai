@@ -7,7 +7,20 @@ import { selectedIds } from '../run.mjs';
 test('backlog validates; cycles, unknown fixtures, empty criteria and unearned acceptance fail',async()=>{
   const original=await json('specs/capabilities.json'),fixtures=await json('fixtures/flowchart/cases.json');
   assert.deepEqual(validateBacklog(original,fixtures),[]);
-  for(const change of [b=>b.capabilities[0].dependencies.push('FC013'),b=>b.capabilities[0].referenceBehaviour.fixtures.push('missing'),b=>b.capabilities[0].acceptanceCriteria=[],b=>b.capabilities[0].status='accepted']){const b=structuredClone(original);change(b);assert.ok(validateBacklog(b,fixtures).length);}
+  const changes = [
+    b => b.capabilities[0].dependencies.push('FC013'),
+    b => b.capabilities[0].referenceBehaviour.fixtures.push('missing'),
+    b => b.capabilities[0].acceptanceCriteria = [],
+    b => {
+      b.capabilities[0].status = 'accepted';
+      b.capabilities[0].evidence = [];
+    },
+  ];
+  for (const change of changes) {
+    const backlog = structuredClone(original);
+    change(backlog);
+    assert.ok(validateBacklog(backlog, fixtures).length);
+  }
 });
 test('capability selection includes dependencies and all accepted regressions',async()=>{
   const caps=(await json('specs/capabilities.json')).capabilities;
