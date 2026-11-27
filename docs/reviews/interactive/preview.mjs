@@ -1,98 +1,119 @@
-import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { mkdir, mkdtemp, readFile } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
+import { candidateRequest } from '../../../evaluation/lib/process.mjs';
 
 const folder = fileURLToPath(new URL('.', import.meta.url));
-const root = resolve(folder, '../../..');
-const repo = 'https://github.com/Rfaering/Asrai';
-const revisions = {
-  base: '8a78dcc981d661a9812f7c3fc01b1f5f376d74c2',
-  candidate: 'fa6895db711f611af14cda3521a73a776400a2e9',
-};
-const git = (...args) => execFileSync('git', args, { cwd: root });
-const port = Number(process.argv[2] ?? 4173);
-if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Provide a valid port number.');
-
-const files = new Map();
-const outputRoot = resolve(root, 'artifacts');
-await mkdir(outputRoot, { recursive: true });
-const output = await mkdtemp(resolve(outputRoot, 'interactive-review-'));
-
-for (const [side, revision] of Object.entries(revisions)) {
-  const checkout = resolve(output, side);
-  await mkdir(checkout);
-  const tree = side === 'base' ? [] : ['--', 'src/'];
-  execFileSync('tar', ['-xf', '-', '-C', checkout], { input: git('archive', '--format=tar', revision, ...tree) });
-  const entries = git('ls-tree', '-r', '-z', '--name-only', revision, '--', 'src/').toString().split('\0').filter(Boolean);
-  for (const path of entries) {
-    const bytes = await readFile(resolve(checkout, path));
-    files.set(`/${side}/${path}`, ['text/javascript; charset=utf-8', bytes]);
-  }
-}
-
-const trusted = resolve(output, 'base');
-const { evaluate } = await import(pathToFileURL(resolve(trusted, 'evaluation/run.mjs')));
-const { candidateRequest } = await import(pathToFileURL(resolve(trusted, 'evaluation/lib/process.mjs')));
-const readTrustedJson = async (path) => JSON.parse(await readFile(resolve(trusted, path), 'utf8'));
-const adapter = resolve(output, 'candidate/src/adapter.mjs');
-const report = await evaluate({ capability: 'FC004', candidate: adapter, output });
-const fixtures = await readTrustedJson('fixtures/flowchart/cases.json');
-const backlog = JSON.parse(git('show', `${revisions.candidate}:specs/capabilities.json`));
-const policy = await readTrustedJson('specs/policy.json');
-const cases = await Promise.all(report.results.map(async (result) => {
-  const fixture = fixtures.find(({ id }) => id === result.caseId);
-  const check = fixture?.checks.find(({ capability, operation }) =>
-    capability === result.capability && operation === result.operation);
-  if (!check) return { ...result };
-  const request = { protocolVersion: 1, operation: result.operation, source: fixture.source };
-  try {
-    const actual = await candidateRequest(adapter, request, {
-      timeoutMs: policy.candidateTimeoutMs,
-      maxBytes: policy.maxOutputBytes,
-    });
-    return { ...result, request, expected: check.expected, actual };
-  } catch (error) {
-    return { ...result, request, expected: check.expected, replayError: error.message };
-  }
-}));
-
-const snapshot = {
-  repo, revisions, issue: 5, pull: 23, pilotIssue: 24, example: 'labels-shapes',
-  capability: backlog.capabilities.find(({ id }) => id === 'FC004'),
-  evidence: {
-    baseline: revisions.base,
-    candidateDigest: report.candidateTreeSha256,
-    acceptanceDigest: report.acceptanceSha256,
-    summary: report.summary,
-    referenceVersion: report.reference.mermaid,
-  },
-  cases,
-};
-
-files.set('/snapshot.json', ['application/json; charset=utf-8', JSON.stringify(snapshot)]);
-files.set('/report.json', ['application/json; charset=utf-8', JSON.stringify(report, null, 2)]);
-for (const [path, name, type] of [
-  ['/', 'index.html', 'text/html'],
-  ['/style.css', 'style.css', 'text/css'],
-  ['/review.mjs', 'review.mjs', 'text/javascript'],
-]) {
-  files.set(path, [`${type}; charset=utf-8`, await readFile(resolve(folder, name))]);
-}
-
-const server = createServer((request, response) => {
-  const file = files.get(request.url.split('?', 1)[0]);
-  response.setHeader('X-Content-Type-Options', 'nosniff');
-  if (request.method !== 'GET' || !file) {
-    response.writeHead(request.method === 'GET' ? 404 : 405).end();
-    return;
-  }
-  response.writeHead(200, { 'Content-Type': file[0], 'Cache-Control': 'no-store' });
-  response.end(file[1]);
+const { values, positionals } = parseArgs({
+  options: { workspace: { type: 'string' } },
+  allowPositionals: true,
 });
+const workspace = resolve(values.workspace ?? resolve(folder, '../../..'));
+const port = Number(positionals[0] ?? 4173);
+if (positionals.length > 1 || !Number.isInteger(port) || port < 0 || port > 65535) {
+  throw new Error('Usage: node docs/reviews/interactive/preview.mjs [port] [--workspace path]');
+}
+
+const sourceDir = resolve(workspace, 'src');
+const adapter = resolve(sourceDir, 'adapter.mjs');
+const generator = resolve(workspace, 'evaluation/lib/properties.mjs');
+const readJson = async (path) => JSON.parse(await readFile(resolve(workspace, path), 'utf8'));
+const pages = new Map([
+  ['/', ['index.html', 'text/html']],
+  ['/style.css', ['style.css', 'text/css']],
+  ['/review.mjs', ['review.mjs', 'text/javascript']],
+]);
+
+async function catalog() {
+  const [authored, backlog, policy, generatorFile] = await Promise.all([
+    readJson('fixtures/flowchart/cases.json'),
+    readJson('specs/capabilities.json'),
+    readJson('specs/policy.json'),
+    stat(generator),
+  ]);
+  const generatorUrl = pathToFileURL(generator);
+  generatorUrl.searchParams.set('revision', `${generatorFile.mtimeMs}-${generatorFile.ctimeMs}`);
+  const { generatedChecks } = await import(generatorUrl);
+  const capabilities = new Set(backlog.capabilities.map(({ id }) => id));
+  const generated = generatedChecks(capabilities, policy.seed);
+  const cases = [...authored, ...generated].map(({ id, source, checks }) => ({ id, source, checks }));
+  return { cases, policy };
+}
+
+async function sourceRevision() {
+  const entries = await readdir(sourceDir, { recursive: true, withFileTypes: true });
+  const files = entries.filter((entry) => entry.isFile()).map((entry) => resolve(entry.parentPath, entry.name)).sort();
+  const stamps = await Promise.all(files.map(async (file) => {
+    const { mtimeMs, ctimeMs, size } = await stat(file);
+    return [file, mtimeMs, ctimeMs, size];
+  }));
+  return createHash('sha256').update(JSON.stringify(stamps)).digest('hex');
+}
+
+function send(response, status, body) {
+  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  response.end(JSON.stringify(body));
+}
+
+const server = createServer(async (request, response) => {
+  response.setHeader('Cache-Control', 'no-store');
+  response.setHeader('X-Content-Type-Options', 'nosniff');
+  response.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
+  const actualPort = server.address().port;
+  const allowedHosts = [`127.0.0.1:${actualPort}`, `localhost:${actualPort}`];
+  if (!allowedHosts.includes(request.headers.host)) {
+    return send(response, 403, { error: 'Open the preview using its local address.' });
+  }
+  if (request.method !== 'GET') return send(response, 405, { error: 'Use GET for this endpoint.' });
+
+  try {
+    const url = new URL(request.url, `http://127.0.0.1:${actualPort}`);
+    if (url.pathname.startsWith('/api/') && request.headers['sec-fetch-site'] === 'cross-site') {
+      return send(response, 403, { error: 'Open the preview to run tests.' });
+    }
+    const page = pages.get(url.pathname);
+    if (page) {
+      const [file, type] = page;
+      const body = await readFile(resolve(folder, file));
+      response.writeHead(200, { 'Content-Type': `${type}; charset=utf-8` });
+      return response.end(body);
+    }
+
+    if (url.pathname === '/api/catalog') {
+      const [{ cases }, revision] = await Promise.all([catalog(), sourceRevision()]);
+      return send(response, 200, { cases, revision });
+    }
+
+    if (url.pathname === '/api/run') {
+      const { cases, policy } = await catalog();
+      const operation = url.searchParams.get('operation');
+      if (!policy.supportedOperations.includes(operation)) return send(response, 400, { error: 'Unknown pipeline operation.' });
+      const id = url.searchParams.get('case');
+      const selected = cases.find((entry) => entry.id === id);
+      if (!selected) return send(response, 404, { error: 'That case is no longer in the catalog.' });
+
+      const input = { protocolVersion: 1, source: selected.source, operation };
+      try {
+        const result = await candidateRequest(adapter, input, {
+          timeoutMs: policy.candidateTimeoutMs, maxBytes: policy.maxOutputBytes,
+        });
+        return send(response, 200, { result });
+      } catch (error) {
+        return send(response, 502, { error: error.message });
+      }
+    }
+
+    return send(response, 404, { error: 'Page not found.' });
+  } catch (error) {
+    return send(response, 500, { error: error.message });
+  }
+});
+
+await Promise.all([catalog(), stat(adapter)]);
 server.listen(port, '127.0.0.1', () => {
-  console.log(`Asrai review preview: http://127.0.0.1:${server.address().port}/`);
-  console.log(`Evaluation: ${report.summary.passed}/${report.summary.total} checks passed`);
-  console.log(`Report: ${resolve(output, 'report.json')}`);
+  console.log(`Asrai test explorer: http://127.0.0.1:${server.address().port}/`);
+  console.log(`Workspace: ${workspace}`);
 });

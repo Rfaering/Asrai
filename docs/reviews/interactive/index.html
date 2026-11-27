@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Asrai · Review preview</title>
+  <title>Asrai · Test explorer</title>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./review.mjs"></script>
 </head>
@@ -11,73 +11,58 @@
   <header class="topbar">
     <div class="frame topbar-inner">
       <a class="brand" href="./"><span aria-hidden="true" class="mark"><i></i><i></i><i></i></span> Asrai</a>
-      <nav aria-label="Review sections">
-        <a href="#playground">Playground</a>
-        <a href="#tests">Test explorer</a>
-        <a href="#evidence">Evidence</a>
-      </nav>
+      <span class="workspace">Local workspace</span>
     </div>
   </header>
 
   <main class="frame">
     <header class="intro">
       <div>
-        <h1>Review preview</h1>
-        <p>FC004 <span aria-hidden="true">/</span> Flowchart node shapes and labels</p>
+        <h1>Test explorer</h1>
+        <p>Run a test case through each phase of the current Asrai engine.</p>
       </div>
-      <a class="summary" id="summary" href="#tests" aria-live="polite">Loading evaluation…</a>
+      <button type="button" id="refresh" class="secondary">Refresh now</button>
     </header>
     <p id="load-error" role="alert" hidden></p>
 
-    <section id="playground" aria-labelledby="playground-heading">
-      <div class="section-heading">
-        <div><h2 id="playground-heading">Playground</h2><p>Run the same source against both Asrai revisions.</p></div>
-        <span class="tag">Live comparison</span>
-      </div>
-      <div class="workbench">
-        <div class="toolbar">
-          <div id="phases" class="phases" role="group" aria-label="Pipeline operation">
-            <button type="button" data-operation="validate" aria-pressed="false">Validation</button>
-            <button type="button" data-operation="parse" aria-pressed="true">Model</button>
-            <button type="button" data-operation="layout" aria-pressed="false">Layout</button>
-            <button type="button" data-operation="render" aria-pressed="false">SVG</button>
+    <div class="explorer">
+      <aside class="catalog" aria-labelledby="catalog-heading">
+        <div class="catalog-header">
+          <div class="catalog-title"><h2 id="catalog-heading">Cases</h2><span id="case-count"></span></div>
+          <label class="visually-hidden" for="search">Filter cases</label>
+          <input type="search" id="search" placeholder="Filter by case or capability" autocomplete="off">
+        </div>
+        <div id="case-list" role="group" aria-label="Test cases"><p class="empty">Loading tests…</p></div>
+      </aside>
+
+      <section class="workbench" aria-labelledby="case-heading">
+        <header class="case-header">
+          <h2 id="case-heading">Select a test case</h2>
+          <p id="case-meta" class="muted"></p>
+        </header>
+        <div class="sample">
+          <h3>Source</h3>
+          <pre id="source"></pre>
+        </div>
+        <div id="phases" class="phases" role="group" aria-label="Pipeline phase">
+          <button type="button" data-operation="validate" aria-pressed="true">Validation</button>
+          <button type="button" data-operation="parse" aria-pressed="false">Model</button>
+          <button type="button" data-operation="layout" aria-pressed="false">Layout</button>
+          <button type="button" data-operation="render" aria-pressed="false">SVG</button>
+        </div>
+        <div class="result">
+          <div class="output" id="output">
+            <h3>Asrai output</h3>
+            <p id="run-status" role="status">Select a case to run a phase.</p>
+            <div id="response"></div>
           </div>
-          <button type="submit" form="editor" id="run" class="primary" disabled>Run both</button>
+          <div class="expectation">
+            <h3>Test expectations</h3>
+            <div id="expected"></div>
+          </div>
         </div>
-        <div class="comparison">
-          <form id="editor" class="sample">
-            <div class="pane-heading"><label for="source">Flowchart source</label><button type="button" id="reset" disabled>Reset example</button></div>
-            <textarea id="source" maxlength="16000" spellcheck="false" placeholder="Loading the worked example…" disabled></textarea>
-          </form>
-          <article class="result" aria-labelledby="base-heading">
-            <div class="pane-heading"><h3 id="base-heading">Before</h3><a id="base-link"></a></div>
-            <div class="output" id="base-output"></div>
-          </article>
-          <article class="result" aria-labelledby="candidate-heading">
-            <div class="pane-heading"><h3 id="candidate-heading">After</h3><a id="candidate-link"></a></div>
-            <div class="output" id="candidate-output"></div>
-          </article>
-        </div>
-        <p class="run-status" id="run-status" role="status">Loading the worked example…</p>
-      </div>
-    </section>
-
-    <section id="tests" aria-labelledby="tests-heading">
-      <div class="section-heading">
-        <div><h2 id="tests-heading">Test explorer</h2><p>Inspect the recorded verdict, expected result, and replayed Asrai response for each check.</p></div>
-        <label class="filter">Checks <select id="filter" disabled><option value="focus">FC004</option><option value="all">All checks</option><option value="fail">Failures</option></select></label>
-      </div>
-      <div class="test-grid">
-        <div id="case-list" role="group" aria-label="Evaluation cases"></div>
-        <div id="case-detail" class="case-detail"><p>Loading cases…</p></div>
-      </div>
-    </section>
-
-    <section id="evidence" aria-labelledby="evidence-heading">
-      <div class="section-heading"><div><h2 id="evidence-heading">Evaluation provenance</h2><p>The evaluator records verdicts. The preview replays the individual requests to display their responses.</p></div></div>
-      <dl id="provenance"></dl>
-      <a href="./report.json" download="asrai-fc004-report.json">Download evaluation report</a>
-    </section>
+      </section>
+    </div>
   </main>
 </body>
 </html>

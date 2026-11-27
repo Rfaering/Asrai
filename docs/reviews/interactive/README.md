@@ -1,24 +1,28 @@
-# Interactive Asrai review preview
+# Live Asrai test explorer
 
-Try [FC004’s node-shape change](https://github.com/Rfaering/Asrai/pull/23) against the exact pre-change and merged revisions.
-
-From the repository root, with Node 24, Git, and tar available:
+Run this from the repository root:
 
 ```sh
 node docs/reviews/interactive/preview.mjs
 ```
 
-Open [the local review preview](http://127.0.0.1:4173/). You can pass a different port as the first argument. The server binds to loopback and serves the page, pinned browser modules, and evaluation data. Startup runs the trusted base evaluator against the pinned candidate, then replays each case through the same candidate process runner so responses can be inspected. The evaluator report remains under the printed path in `artifacts/`.
+Open [the local test explorer](http://127.0.0.1:4173/). Choose a case, then select **Validation**, **Model**, **Layout**, or **SVG**. Each phase shows the live Asrai response and that case’s expectations, when available. Layout draws the returned node bounds and edge paths. SVG displays the image returned by the engine and gives access to its markup.
 
-The opening example is `labels-shapes`. The earlier revision returns `ASRAI_UNSUPPORTED`. The merged revision returns a model with rectangle, rounded, and diamond nodes. To try a regression case, choose **All checks**, select **invalid-direction**, then choose **Open in playground**. Layout and SVG display the pinned engine’s unimplemented responses.
+The catalog includes authored flowchart fixtures and the evaluator’s seeded generated cases, including cases for work still in progress. The page checks for changes every two seconds while visible. Saving a fixture or generator update refreshes the catalog. Saving product code reruns the selected phase. Every run starts a fresh adapter process, so new engine behavior is available without rebuilding or restarting the explorer. **Refresh now** runs the selected phase immediately.
 
-![Screenshot of the interactive Asrai review preview](screenshot.png)
+By default the explorer uses its own checkout. To follow another worktree, pass its path and optionally a different port:
 
-The screenshot shows browser output from the pinned comparison and evaluator. The page links the source revisions and displays both evidence digests. Evaluator verdicts and replayed adapter responses are labeled on every case. The registry link shows FC004’s status at the pinned candidate revision.
+```sh
+node docs/reviews/interactive/preview.mjs 4175 --workspace "/path/to/Asrai"
+```
+
+The runner binds to loopback, calls Asrai’s regular adapter using the configured process limits, and reads expectations from the chosen worktree. The independent evaluator remains the source of acceptance verdicts.
+
+![Screenshot of the Asrai test explorer](screenshot.png)
+
+The screenshot shows the authored `header-tb` case and an actual model response. The interactive catalog opens on the first fixture by default.
 
 ## Browser verification
-
-With the preview running, the optional browser check uses the existing pinned reference browser tooling.
 
 ```sh
 npm run reference:install
@@ -26,4 +30,4 @@ npm run reference:browser
 node docs/reviews/interactive/verify.mjs
 ```
 
-Pass the local preview URL to the verification script if you selected a different port.
+The browser check starts its own preview and uses a temporary workspace to exercise live fixture changes and rendering. Pass a filename as the first argument to capture the real-workspace model view.
