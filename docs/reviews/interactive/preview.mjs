@@ -5,6 +5,8 @@ import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { candidateRequest } from '../../../evaluation/lib/process.mjs';
+import { checkExpectation } from './expectations.mjs';
+import { expectationsFor, phaseFor } from './phases.mjs';
 
 const folder = fileURLToPath(new URL('.', import.meta.url));
 const { values, positionals } = parseArgs({
@@ -25,7 +27,41 @@ const pages = new Map([
   ['/', ['index.html', 'text/html']],
   ['/style.css', ['style.css', 'text/css']],
   ['/review.mjs', ['review.mjs', 'text/javascript']],
+  ['/phases.mjs', ['phases.mjs', 'text/javascript']],
 ]);
+
+let inspector;
+
+async function inspect(svg) {
+  inspector ??= import('../../../reference/browser.mjs').then(async ({ createBrowser, inspectSvg }) => {
+    const browser = await createBrowser();
+    return { browser, inspectSvg };
+  }).catch((error) => {
+    inspector = undefined;
+    throw error;
+  });
+  const { browser, inspectSvg } = await inspector;
+  return inspectSvg(browser, svg);
+}
+
+async function runPhase(entry, operation, policy) {
+  const repeat = async () => {
+    try {
+      const actual = await candidateRequest(adapter, { protocolVersion: 1, source: entry.source, operation }, {
+        timeoutMs: policy.candidateTimeoutMs, maxBytes: policy.maxOutputBytes,
+      });
+      return { actual };
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
+  const observation = await repeat();
+  const checks = [];
+  for (const check of expectationsFor(entry, operation)) {
+    checks.push(await checkExpectation(observation, check, { repeat, inspect, benchmarkSamples: policy.benchmark.samples }));
+  }
+  return { result: observation.actual, error: observation.error, checks };
+}
 
 async function catalog() {
   const [authored, backlog, policy, generatorFile] = await Promise.all([
@@ -39,7 +75,7 @@ async function catalog() {
   const { generatedChecks } = await import(generatorUrl);
   const capabilities = new Set(backlog.capabilities.map(({ id }) => id));
   const generated = generatedChecks(capabilities, policy.seed);
-  const cases = [...authored, ...generated].map(({ id, source, checks }) => ({ id, source, checks }));
+  const cases = [...authored, ...generated].map(({ id, source, checks = [] }) => ({ id, source, checks }));
   return { cases, policy };
 }
 
@@ -83,27 +119,30 @@ const server = createServer(async (request, response) => {
     }
 
     if (url.pathname === '/api/catalog') {
-      const [{ cases }, revision] = await Promise.all([catalog(), sourceRevision()]);
+      const [{ cases, policy }, sourceStamp] = await Promise.all([catalog(), sourceRevision()]);
+      const revision = createHash('sha256').update(JSON.stringify([sourceStamp, policy])).digest('hex');
       return send(response, 200, { cases, revision });
     }
 
-    if (url.pathname === '/api/run') {
+    if (url.pathname === '/api/run' || url.pathname === '/api/check') {
       const { cases, policy } = await catalog();
-      const operation = url.searchParams.get('operation');
-      if (!policy.supportedOperations.includes(operation)) return send(response, 400, { error: 'Unknown pipeline operation.' });
       const id = url.searchParams.get('case');
       const selected = cases.find((entry) => entry.id === id);
       if (!selected) return send(response, 404, { error: 'That case is no longer in the catalog.' });
 
-      const input = { protocolVersion: 1, source: selected.source, operation };
-      try {
-        const result = await candidateRequest(adapter, input, {
-          timeoutMs: policy.candidateTimeoutMs, maxBytes: policy.maxOutputBytes,
-        });
-        return send(response, 200, { result });
-      } catch (error) {
-        return send(response, 502, { error: error.message });
+      if (url.pathname === '/api/run') {
+        const operation = url.searchParams.get('operation');
+        if (!policy.supportedOperations.includes(operation)) return send(response, 400, { error: 'Unknown pipeline operation.' });
+        return send(response, 200, await runPhase(selected, operation, policy));
       }
+
+      const results = {};
+      const phases = new Set(expectationsFor(selected).map(({ operation }) => phaseFor(operation)));
+      for (const phase of phases) {
+        if (response.destroyed) return;
+        results[phase] = (await runPhase(selected, phase, policy)).checks;
+      }
+      return send(response, 200, { results });
     }
 
     return send(response, 404, { error: 'Page not found.' });

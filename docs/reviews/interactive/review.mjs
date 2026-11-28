@@ -1,9 +1,16 @@
+import { expectationsFor } from './phases.mjs';
+
 const byId = (id) => document.getElementById(id);
 const phases = [...byId('phases').querySelectorAll('button')];
 const operations = new Set(phases.map((button) => button.dataset.operation));
 const initial = new URLSearchParams(location.hash.slice(1));
-const renderChecks = new Set(['benchmark', 'determinism', 'security']);
 const search = byId('search');
+const verdicts = new Map();
+const caseButtons = new Map();
+const verdictLabels = {
+  pass: 'Matches expectation', fail: 'Does not match expectation', none: 'No expectation',
+  checking: 'Checking expectations', unavailable: 'Could not check expectation',
+};
 
 let cases = [];
 let catalogKey;
@@ -13,6 +20,7 @@ let operation = operations.has(initial.get('phase')) ? initial.get('phase') : 'v
 let pendingRun;
 let imageUrl;
 let refreshing = false;
+let pendingCatalogChecks;
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -35,6 +43,104 @@ function svgElement(tag, attributes) {
   const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
   return node;
+}
+
+function drawVerdict(target, verdict) {
+  if (target.dataset.verdict === verdict) return;
+  target.dataset.verdict = verdict;
+  target.title = verdictLabels[verdict];
+  const strokes = { pass: 'M4 8l3 3 5-6', fail: 'M5 5l6 6m0-6-6 6', none: 'M5 8h6', checking: 'M8 4v4l3 1', unavailable: 'M8 4v5m0 3h.01' };
+  const icon = svgElement('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true' });
+  icon.append(svgElement('circle', { cx: 8, cy: 8, r: 7 }), svgElement('path', { d: strokes[verdict] }));
+  target.replaceChildren(icon);
+}
+
+function verdictFor(entry, phase) {
+  const expected = expectationsFor(entry, phase);
+  if (!expected.length) return 'none';
+  const result = verdicts.get(entry.id);
+  const checked = phase ? result?.[phase] ?? [] : Object.values(result ?? {}).flat();
+  if (checked.some(({ outcome }) => outcome === 'fail')) return 'fail';
+  if (checked.some(({ outcome }) => outcome === 'unavailable')) return 'unavailable';
+  return checked.length === expected.length ? 'pass' : 'checking';
+}
+
+function showVerdict(control, entry, phase) {
+  const verdict = verdictFor(entry, phase);
+  drawVerdict(control.querySelector('.verdict-icon'), verdict);
+  control.setAttribute('aria-description', verdictLabels[verdict]);
+}
+
+function showExpectations(selected) {
+  const panel = byId('expected');
+  panel.replaceChildren();
+  if (!selected) return;
+  const results = verdicts.get(selected.id)?.[operation] ?? [];
+  const checks = expectationsFor(selected, operation);
+  if (!checks.length) {
+    const note = element('p', undefined, 'expectation-note');
+    const icon = element('span', undefined, 'verdict-icon');
+    drawVerdict(icon, 'none');
+    note.append(icon, document.createTextNode('No expectation for this phase.'));
+    panel.append(note);
+  }
+  for (const [index, check] of checks.entries()) {
+    const result = results[index];
+    const outcome = result?.outcome ?? 'checking';
+    const group = element('div', undefined, 'expectation-group');
+    const verdict = element('p', undefined, 'expectation-note');
+    const icon = element('span', undefined, 'verdict-icon');
+    drawVerdict(icon, outcome);
+    verdict.append(icon, document.createTextNode(verdictLabels[outcome]));
+    group.append(element('h4', `${check.capability} · ${check.operation}`, 'mono'), verdict);
+    if (result?.failures.length) {
+      const failures = element('ul', undefined, 'expectation-failures');
+      for (const failure of result.failures) failures.append(element('li', failure));
+      group.append(failures);
+    }
+    group.append(json(check.expected));
+    panel.append(group);
+  }
+}
+
+function storeVerdicts(entry, results, fromDisplayedRun = false) {
+  const previous = verdicts.get(entry.id);
+  verdicts.set(entry.id, fromDisplayedRun ? { ...previous, ...results } : { ...results, ...previous });
+  const button = caseButtons.get(entry.id);
+  if (button) showVerdict(button, entry);
+  if (entry.id === selectedId) {
+    for (const button of phases) showVerdict(button, entry, button.dataset.operation);
+    if (Object.hasOwn(results, operation)) showExpectations(entry);
+  }
+}
+
+function checkCatalog() {
+  pendingCatalogChecks?.abort();
+  const controller = new AbortController();
+  pendingCatalogChecks = controller;
+  const queue = cases.filter((entry) => expectationsFor(entry).length);
+  queue.sort((left, right) => Number(right.id === selectedId) - Number(left.id === selectedId));
+  const signal = controller.signal;
+  async function work() {
+    while (queue.length && !signal.aborted) {
+      const entry = queue.shift();
+      try {
+        const query = new URLSearchParams({ case: entry.id });
+        const { results } = await fetchJson(`./api/check?${query}`, { signal });
+        if (!signal.aborted) storeVerdicts(entry, results);
+      } catch (error) {
+        if (signal.aborted) return;
+        const results = {};
+        for (const button of phases) {
+          const phase = button.dataset.operation;
+          results[phase] = expectationsFor(entry, phase).map(() => ({ outcome: 'unavailable', failures: [error.message] }));
+        }
+        storeVerdicts(entry, results);
+      }
+    }
+  }
+  const workers = Math.min(3, queue.length);
+  for (let i = 0; i < workers; i++) void work();
 }
 
 function sceneDrawing(scene) {
@@ -136,8 +242,10 @@ async function runCase(selected) {
   status.className = 'muted';
   try {
     const query = new URLSearchParams({ case: selected.id, operation });
-    const { result } = await fetchJson(`./api/run?${query}`, { signal: request.signal });
+    const { result, error, checks } = await fetchJson(`./api/run?${query}`, { signal: request.signal });
     if (request.signal.aborted) return;
+    storeVerdicts(selected, { [operation]: checks }, true);
+    if (error) throw new Error(error);
     const rejected = result.accepted === false || result.status === 'rejected';
     const label = result.status === 'unimplemented' ? 'Unimplemented'
       : rejected ? 'Rejected' : result.accepted === true ? 'Accepted' : result.status === 'ok' ? 'Completed' : result.status;
@@ -160,6 +268,7 @@ function showList() {
   const focusedId = document.activeElement?.dataset.caseId;
   byId('case-count').textContent = query ? `${matches.length} / ${cases.length}` : String(cases.length);
   list.replaceChildren();
+  caseButtons.clear();
   if (!matches.length) list.append(element('p', 'No cases match your search.', 'empty'));
   let active;
   for (const entry of matches) {
@@ -168,7 +277,12 @@ function showList() {
     button.dataset.caseId = entry.id;
     button.setAttribute('aria-pressed', String(entry.id === selectedId));
     const capabilities = [...new Set(entry.checks.map((check) => check.capability))].join(' · ');
-    button.append(element('strong', entry.id), element('span', capabilities, 'mono'));
+    const label = element('span', undefined, 'case-label');
+    const icon = element('span', undefined, 'verdict-icon');
+    label.append(element('strong', entry.id), element('span', capabilities, 'mono'));
+    button.append(icon, label);
+    caseButtons.set(entry.id, button);
+    showVerdict(button, entry);
     button.addEventListener('click', () => {
       selectedId = entry.id;
       for (const item of list.querySelectorAll('button')) item.setAttribute('aria-pressed', String(item === button));
@@ -194,16 +308,13 @@ function showSelection(updateUrl = false) {
   byId('case-heading').textContent = selected?.id ?? 'Select a test case';
   byId('source').textContent = selected ? selected.source || '(empty source)' : '';
   byId('case-meta').textContent = selected ? [...new Set(selected.checks.map((check) => check.capability))].join(' · ') : '';
-  const expectations = byId('expected');
-  expectations.replaceChildren();
-  for (const button of phases) button.setAttribute('aria-pressed', String(button.dataset.operation === operation));
+  for (const button of phases) {
+    button.setAttribute('aria-pressed', String(button.dataset.operation === operation));
+    showVerdict(button, selected, button.dataset.operation);
+  }
+  showExpectations(selected);
 
   if (selected) {
-    const checks = selected.checks.filter((check) => (renderChecks.has(check.operation) ? 'render' : check.operation) === operation);
-    for (const check of checks) {
-      expectations.append(element('h4', `${check.capability} · ${check.operation}`, 'mono'), json(check.expected));
-    }
-    if (!checks.length) expectations.append(element('p', 'This case has no expectation for this phase.', 'muted'));
     if (updateUrl) {
       const hash = new URLSearchParams({ case: selected.id, phase: operation });
       history.replaceState(null, '', `#${hash}`);
@@ -222,15 +333,18 @@ async function refresh(force = false) {
     const current = await fetchJson('./api/catalog');
     const nextKey = JSON.stringify(current.cases);
     const changed = nextKey !== catalogKey;
+    const rerun = changed || revision !== current.revision || force;
+    if (rerun) verdicts.clear();
     if (changed) {
       cases = current.cases;
       catalogKey = nextKey;
       if (!cases.some((entry) => entry.id === selectedId)) selectedId = cases[0]?.id;
-      showList();
     }
-    if (changed || revision !== current.revision || force) {
+    if (rerun) {
+      showList();
       revision = current.revision;
       showSelection(true);
+      checkCatalog();
     }
     error.hidden = true;
   } catch (failure) {
