@@ -6,4 +6,6 @@ The repository owner accepted FC002 and FC003 on 2026-11-27. Independent evaluat
 
 The [FC004 report](FC004.json) evaluates the merged implementation at `fa6895d` with the trusted pre-merge evaluator at `8a78dcc`. All 20 checks passed, including 17 accepted regressions.
 
+The [FC005 report](FC005.json) evaluates the merged implementation at `edc1eec` with the trusted pre-merge evaluator at `3569a7f`. All 23 checks passed, including 20 accepted regressions.
+
 An independent evaluator may store a passing trusted report here and link it from `specs/capabilities.json` with `candidateSha256` and `acceptanceSha256`. The report must match the actual candidate and evaluated acceptance baseline, cover every criterion/dependency and include all accepted regressions. Promotion and the resulting acceptance-seal change are reviewed independently from implementation. Never store test-mock pass reports as product evidence.
