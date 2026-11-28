@@ -40,16 +40,16 @@ test('rejects missing or invalid headers and bare node identifiers', async () =>
   }
 });
 
-test('rejects unsupported shapes, edges and redeclarations', async () => {
+test('rejects unsupported shapes, link syntax and redeclarations', async () => {
   const cases = [
     ['graph TD\nA[(Archive)]', 2, 2],
     ['graph TD\nA[/Slant/]', 2, 2],
     ['graph TD\nA((Circle))', 2, 2],
     ['graph TD\nA@{ shape: circle }', 2, 2],
-    ['graph LR\nA --> B', 2, 3],
-    ['graph LR\nA -->|yes| B', 2, 3],
-    ['graph LR\nA --- B', 2, 3],
+    ['graph LR\nA ---|yes| B', 2, 6],
+    ['graph LR\nA ---xray', 2, 3],
     ['graph LR\nA ----> B', 2, 3],
+    ['graph LR\nA --> B --- C', 2, 9],
     ['graph TB\nA\n  A', 3, 3],
   ];
   for (const [source, line, column] of cases) {
@@ -76,7 +76,9 @@ test('reports malformed shapes and incomplete edges as syntax errors', async () 
     ['graph LR\n  A[Start] ---  ', 2, 12, 'edge target'],
     ['graph LR\nA -->|yes|', 2, 3, 'edge target'],
     ['graph LR\nA -->|yes', 2, 6, 'close the edge label'],
+    ['graph LR\n  A --> |"unterminated| B', 2, 9, 'close the edge label'],
     ['graph LR\nA --> B -->', 2, 9, 'edge target'],
+    ['graph LR\nA --> B --> C -->', 2, 15, 'edge target'],
     ['graph LR\nA --> end', 2, 7, 'reserved'],
     ['graph TB\nA\n  B{broken', 3, 4, 'close the node label'],
   ];

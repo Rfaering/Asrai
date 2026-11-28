@@ -51,11 +51,69 @@ test('parses standalone bare and labeled nodes in source order', async () => {
   });
 });
 
+test('parses directed and open edges in source order and preserves endpoint labels', async () => {
+  const source = [
+    'flowchart LR',
+    'A[Start]',
+    'A-->| ready now |B(Finish)',
+    'B --- C',
+    'A --> |" sí | 世界 "| C',
+    'A --> B',
+    'A --> B',
+    'C --> C',
+  ].join('\n');
+
+  assert.deepEqual(await execute({ protocolVersion: 1, operation: 'parse', source }), {
+    status: 'ok',
+    model: {
+      type: 'flowchart',
+      direction: 'LR',
+      nodes: [
+        { id: 'A', label: 'Start', shape: 'rect' },
+        { id: 'B', label: 'Finish', shape: 'rounded' },
+        { id: 'C', label: 'C', shape: 'rect' },
+      ],
+      edges: [
+        { source: 'A', target: 'B', label: 'ready now', directed: true },
+        { source: 'B', target: 'C', label: '', directed: false },
+        { source: 'A', target: 'C', label: 'sí | 世界', directed: true },
+        { source: 'A', target: 'B', label: '', directed: true },
+        { source: 'A', target: 'B', label: '', directed: true },
+        { source: 'C', target: 'C', label: '', directed: true },
+      ],
+    },
+  });
+  assert.deepEqual(await execute({ protocolVersion: 1, operation: 'validate', source }), {
+    status: 'ok', accepted: true, diagramType: 'flowchart', diagnostics: [],
+  });
+});
+
+test('gives an implicit edge endpoint its first declaration in place', async () => {
+  const source = 'flowchart BT\nA --> B\nC --- B{Check}\nA[Start]\nB --> A';
+  const result = await execute({ protocolVersion: 1, operation: 'parse', source });
+
+  assert.equal(result.status, 'ok');
+  assert.deepEqual(result.model.nodes, [
+    { id: 'A', label: 'Start', shape: 'rect' },
+    { id: 'B', label: 'Check', shape: 'diamond' },
+    { id: 'C', label: 'C', shape: 'rect' },
+  ]);
+  assert.deepEqual(result.model.edges, [
+    { source: 'A', target: 'B', label: '', directed: true },
+    { source: 'C', target: 'B', label: '', directed: false },
+    { source: 'B', target: 'A', label: '', directed: true },
+  ]);
+});
+
 test('parse returns validation diagnostics for malformed or unsupported input', async () => {
   const cases = [
     ['graph TB\n  A[broken', 'ASRAI_SYNTAX', 2, 4],
     ['flowchart LR\nA -->', 'ASRAI_SYNTAX', 2, 3],
+    ['flowchart LR\nA --> B[broken', 'ASRAI_SYNTAX', 2, 8],
+    ['flowchart LR\nA -->|| B', 'ASRAI_SYNTAX', 2, 6],
+    ['flowchart LR\nA --> B --> C', 'ASRAI_UNSUPPORTED', 2, 9],
     ['flowchart TB\nA\n  A[Duplicate]', 'ASRAI_UNSUPPORTED', 3, 3],
+    ['flowchart TB\nB[First]\nA --> B[Again]', 'ASRAI_UNSUPPORTED', 3, 7],
     ['graph TD\n  A[(Archive)]', 'ASRAI_UNSUPPORTED', 2, 4],
     ['graph TD\n  A["Sø" tail]', 'ASRAI_UNSUPPORTED', 2, 4],
   ];
