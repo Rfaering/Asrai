@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Asrai · Test explorer</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./review.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="frame topbar-inner">
+      <a class="brand" href="./"><span aria-hidden="true" class="mark"><i></i><i></i><i></i></span> Asrai</a>
+      <span class="workspace">Local workspace</span>
+    </div>
+  </header>
+
+  <main class="frame">
+    <header class="intro">
+      <div>
+        <h1>Test explorer</h1>
+        <p>Run a test case through each phase of the current Asrai engine.</p>
+      </div>
+      <button type="button" id="refresh" class="secondary">Refresh now</button>
+    </header>
+    <p id="load-error" role="alert" hidden></p>
+
+    <div class="explorer">
+      <aside class="catalog" aria-labelledby="catalog-heading">
+        <div class="catalog-header">
+          <div class="catalog-title"><h2 id="catalog-heading">Cases</h2><span id="case-count"></span></div>
+          <label class="visually-hidden" for="search">Filter cases</label>
+          <input type="search" id="search" placeholder="Filter by case or capability" autocomplete="off">
+        </div>
+        <div id="case-list" role="group" aria-label="Test cases"><p class="empty">Loading tests…</p></div>
+      </aside>
+
+      <section class="workbench" aria-labelledby="case-heading">
+        <header class="case-header">
+          <h2 id="case-heading">Select a test case</h2>
+          <p id="case-meta" class="muted"></p>
+        </header>
+        <div class="sample">
+          <h3>Source</h3>
+          <pre id="source"></pre>
+        </div>
+        <div id="phases" class="phases" role="group" aria-label="Pipeline phase">
+          <button type="button" data-operation="validate" aria-pressed="true"><span class="verdict-icon"></span>Validation</button>
+          <button type="button" data-operation="parse" aria-pressed="false"><span class="verdict-icon"></span>Model</button>
+          <button type="button" data-operation="layout" aria-pressed="false"><span class="verdict-icon"></span>Layout</button>
+          <button type="button" data-operation="render" aria-pressed="false"><span class="verdict-icon"></span>SVG</button>
+        </div>
+        <div class="result">
+          <div class="output" id="output">
+            <h3>Asrai output</h3>
+            <p id="run-status" role="status">Select a case to run a phase.</p>
+            <div id="response"></div>
+          </div>
+          <div class="expectation">
+            <h3>Test expectations</h3>
+            <div id="expected"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
