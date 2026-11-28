@@ -6,8 +6,8 @@ import { resolve } from 'node:path';
 import { json } from '../lib/io.mjs';
 import { evaluate } from '../run.mjs';
 const directory=await mkdtemp(resolve(tmpdir(),'asrai-runner-'));
-const mockCapabilities = new Set(['FC001', 'FC002', 'FC003', 'FC004']);
-const checkCount = 20;
+const mockCapabilities = new Set(['FC001', 'FC002', 'FC003', 'FC004', 'FC005']);
+const checkCount = 23;
 test('honest empty product yields failing evidence, never false compatibility',async()=>{
   const path=resolve(directory,'unimplemented.mjs');
   await writeFile(path,"process.stdin.resume();process.stdin.on('end',()=>console.log(JSON.stringify({status:'unimplemented'})))");

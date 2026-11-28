@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "requestedCapability": "FC005",
+  "capabilities": [
+    "FC001",
+    "FC002",
+    "FC003",
+    "FC004",
+    "FC005"
+  ],
+  "candidateTreeSha256": "c6a64365b04281f324a332741a22f9615707d23d4f18095d3355c0fca6dfeff1",
+  "acceptanceSha256": "677175a626d9cee03e365cf87d6792d435e81fb3f07078af8826ac7194c7db36",
+  "reference": {
+    "mermaid": "11.17.2",
+    "lockSha256": "163ddd3f90570798a9ba69a3b56e3fcf36bd3f47365990a02b42d183d65f966a",
+    "fixturesSha256": "ee24004f3930a43af26270976dabde78da15af005fab56bb9ba6c0d1873d6e8f",
+    "configSha256": "eb999ef841dcfb36afff5096325e2295426a3c474ed41849e93ae744411e10d0"
+  },
+  "environment": {
+    "node": "v24.13.1",
+    "platform": "win32",
+    "seed": 1729
+  },
+  "summary": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0
+  },
+  "results": [
+    {
+      "caseId": "header-tb",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.36039999999997
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-tb",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 65.37130000000002
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-td",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 67.35020000000003
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-td",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 67.27780000000001
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-bt",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.37859999999995
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-bt",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 68.58410000000003
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-lr",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 68.55499999999995
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-lr",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.56280000000004
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-rl",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.03390000000002
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "header-rl",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 69.37959999999998
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "graph-alias",
+      "capability": "FC001",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 74.29269999999997
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "graph-alias",
+      "capability": "FC003",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 70.68869999999993
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "invalid-direction",
+      "capability": "FC002",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 72.99050000000011
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "invalid-shape",
+      "capability": "FC002",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 72.77050000000008
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "invalid-edge",
+      "capability": "FC002",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 70.93689999999992
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "reserved-end",
+      "capability": "FC002",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.37159999999994
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "empty-source",
+      "capability": "FC002",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.2061000000001
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "labels-shapes",
+      "capability": "FC004",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 64.93499999999995
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "labels-shapes",
+      "capability": "FC004",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.45439999999985
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "unicode-label",
+      "capability": "FC004",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 66.71150000000011
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "edge-label",
+      "capability": "FC005",
+      "operation": "validate",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 73.72829999999999
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "edge-label",
+      "capability": "FC005",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 71.61120000000005
+      },
+      "outcome": "pass"
+    },
+    {
+      "caseId": "open-edge",
+      "capability": "FC005",
+      "operation": "parse",
+      "failures": [],
+      "metrics": {
+        "elapsedMs": 71.59440000000018
+      },
+      "outcome": "pass"
+    }
+  ]
+}
